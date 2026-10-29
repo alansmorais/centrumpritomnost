@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Centrum Přítomnost – útulné místo pro setkávání, workshopy, semináře, oslavy a individuální péči.">
+  <title>Centrum Přítomnost</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#F9F6F0',
+            earth: '#8C7662',
+            sage: '#A2AA96',
+            dark: '#2C2A29',
+            clay: '#C28F79'
+          },
+          fontFamily: {
+            heading: ['Lora', 'serif'],
+            body: ['Montserrat', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+    body { background-color: #F9F6F0; color: #2C2A29; }
+    .bg-hero {
+      background-color: #2C2A29;
+      background-image: linear-gradient(rgba(44, 42, 41, 0.7), rgba(44, 42, 41, 0.7)), url('https://images.unsplash.com/photo-1545389336-cf090694435e?q=80&w=2000&auto=format&fit=crop');
+      background-size: cover;
+      background-position: center;
+    }
+  </style>
+</head>
+<body class="font-body antialiased">
+  <nav class="fixed top-0 w-full z-50 bg-cream/90 backdrop-blur-md border-b border-earth/20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-20">
+        <a href="#home" class="font-heading text-2xl tracking-widest text-earth uppercase" aria-label="Centrum Přítomnost – úvod">Přítomnost</a>
+        <div class="hidden md:flex space-x-8 text-sm tracking-wider uppercase">
+          <a href="#rentals" class="text-dark hover:text-earth transition">Prostor</a>
+          <a href="#events" class="text-dark hover:text-earth transition">Události</a>
+          <a href="#treatments" class="text-dark hover:text-earth transition">Péče</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main id="home">
+    <section class="bg-hero min-h-screen flex flex-col justify-center items-center text-center px-4 pt-24 pb-16">
+      <h2 class="text-cream/80 text-sm uppercase tracking-widest mb-4">Tři cesty, jak můžete Centrum Přítomnost využít.</h2>
+      <h1 class="text-4xl md:text-6xl font-heading text-cream mb-6 max-w-3xl leading-tight">Centrum Přítomnost je malé místo pro velké chvíle.</h1>
+      <p class="text-cream text-lg uppercase tracking-[0.3em] font-medium mb-12">PŘIJĎTE K NÁM</p>
+      <div class="flex flex-col sm:flex-row flex-wrap justify-center gap-4">
+        <a href="#rentals" class="px-8 py-4 bg-cream text-dark font-medium text-sm tracking-widest uppercase hover:bg-earth hover:text-cream transition border border-transparent">Pronajměte si prostor.</a>
+        <a href="#events" class="px-8 py-4 bg-transparent text-cream border border-cream font-medium text-sm tracking-widest uppercase hover:bg-cream hover:text-dark transition">Přijďte na náš event.</a>
+        <a href="#treatments" class="px-8 py-4 bg-transparent text-cream border border-cream font-medium text-sm tracking-widest uppercase hover:bg-cream hover:text-dark transition">Rezervujte si péči.</a>
+      </div>
+    </section>
+
+    <section id="rentals" class="py-24 bg-cream">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div>
+            <h2 class="text-xs text-earth uppercase tracking-[0.2em] mb-4 font-semibold">CENTRUM PŘÍTOMNOSTI</h2>
+            <h3 class="font-heading text-4xl text-dark mb-8">Místo, kde se na chvíli zastaví svět.</h3>
+            <div class="space-y-4 text-dark/80 font-light leading-relaxed">
+              <p>Malý domeček na vesnici, prostor pro setkávání, tvoření, sdílení i odpočinek.</p>
+              <p>Centrum Přítomnost je útulné místo pro malé skupiny do 16 lidí, které hledají něco jiného než klasický konferenční sál.</p>
+              <p>Místo, kde můžete pořádat svůj seminář, workshop, ženský kruh, setkání, oslavu, narozeniny, firemní den nebo jednoduše den, který chcete strávit společně.</p>
+              <p>Prostor si můžete pronajmout samostatně, nebo vám během pobytu připravíme také občerstvení a postaráme se o to, aby vám u nás nic podstatného nechybělo.</p>
+              <p class="font-medium text-earth text-lg py-2 italic font-heading">Vy si přineste svůj záměr. O prostor se postaráme my.</p>
+              <p>Centrum je určeno pro menší skupiny, které ocení soukromí, klid a atmosféru skutečného místa.</p>
+              <p>Můžete přijet na pár hodin, na celý den nebo podle potřeby.</p>
+              <p>Ať už potřebujete prostor pro práci, setkání, oslavu nebo společný zážitek, můžete si ho vytvořit přesně podle sebe.</p>
+            </div>
+            <p class="mt-8 text-xs text-earth uppercase tracking-wider font-medium">Pronájem prostoru | občerstvení | jednodenní akce | semináře | workshopy | setkání | oslavy</p>
+            <p class="mt-4 font-medium text-dark">Přijďte si vytvořit svůj vlastní den v Přítomnosti.</p>
+            <div class="mt-8">
+              <a href="#contact" class="inline-block px-8 py-4 bg-dark text-cream text-sm tracking-widest uppercase hover:bg-earth transition">REZERVOVAT PROSTOR</a>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <img src="https://images.unsplash.com/photo-1510798831971-661eb04b3739?q=80&w=800&auto=format&fit=crop" alt="Útulný interiér" loading="lazy" class="w-full h-64 object-cover rounded-sm shadow-md">
+            <img src="https://images.unsplash.com/photo-1600607686527-6fb886090705?q=80&w=800&auto=format&fit=crop" alt="Detail interiéru" loading="lazy" class="w-full h-64 object-cover rounded-sm mt-8 shadow-md">
+            <img src="https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d?q=80&w=800&auto=format&fit=crop" alt="Zahrada" loading="lazy" class="w-full h-64 object-cover rounded-sm shadow-md">
+            <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=800&auto=format&fit=crop" alt="Lidé při společné aktivitě" loading="lazy" class="w-full h-64 object-cover rounded-sm mt-8 shadow-md">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="events" class="py-24 bg-sage/10 border-t border-b border-sage/20">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-xs text-earth uppercase tracking-[0.2em] mb-4 font-semibold">CO SE DĚJE V CENTRU PŘÍTOMNOST</h2>
+        <h3 class="font-heading text-4xl text-dark mb-8">Setkání, která mají smysl.</h3>
+        <div class="space-y-4 text-dark/80 font-light leading-relaxed mb-12 text-left md:text-center">
+          <p>Centrum Přítomnost není jen prostor. Je to také místo, kde sami pořádáme a hostíme semináře, workshopy, kurzy, kruhy a další setkání.</p>
+          <p>Témata se budou měnit podle toho, co právě vzniká, co nás zajímá a co chceme společně prozkoumávat.</p>
+          <p class="font-medium text-dark text-lg py-2">Tělo. Vztahy. Intimita. Život. Tvoření. Ženskost. Osobní rozvoj. A především prostor být skutečně přítomní.</p>
+          <p>Některé akce budou jednodenní, jiné mohou trvat celý víkend. Některé budou praktické, jiné více zážitkové. Vždy ale půjde o skutečné setkání lidí v příjemném a bezpečném prostředí.</p>
+          <p>Podívejte se, co se právě chystá.</p>
+          <p>Vyberte si workshop, seminář nebo událost, která vás osloví, a přijďte se potkat.</p>
+        </div>
+        <div class="text-center font-heading text-xl italic text-earth mb-8 leading-relaxed">
+          <p>Možná se něco nového naučíte.</p>
+          <p>Možná něco pustíte.</p>
+          <p>Možná někoho potkáte.</p>
+          <p>A možná si jen na chvíli dovolíte být.</p>
+        </div>
+        <p class="mb-6 text-xs text-earth uppercase tracking-wider font-medium">Aktuální program | workshopy | semináře | kurzy | ženské kruhy | speciální eventy</p>
+        <p class="mb-8 font-medium text-dark">Tohle je místo pro setkávání. Přijďte se setkat.</p>
+        <a href="#events" class="inline-block px-8 py-4 bg-dark text-cream text-sm tracking-widest uppercase hover:bg-sage hover:text-dark transition">PROHLÉDNOUT PROGRAM</a>
+      </div>
+    </section>
+
+    <section id="treatments" class="py-24 bg-cream">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <h2 class="text-xs text-earth uppercase tracking-[0.2em] mb-4 font-semibold">SLUŽBY V CENTRU PŘÍTOMNOST</h2>
+          <h3 class="font-heading text-4xl text-dark mb-6">Čas, který patří jen vám.</h3>
+          <div class="space-y-4 text-dark/80 font-light leading-relaxed">
+            <p>V Centru Přítomnost najdete také nabídku individuálních služeb a péče od lidí, kteří se věnují práci s tělem, dotekem, relaxací a osobním prožitkem.</p>
+            <p>Můžete si rezervovat masáž, individuální sezení nebo jinou službu podle aktuální nabídky.</p>
+            <p>Každý z našich průvodců má svůj vlastní způsob práce, zkušenosti a specializaci. Proto jsme pro vás připravili jejich medailonky, abyste si mohli vybrat člověka i službu, která je vám nejbližší.</p>
+            <p class="font-medium text-earth pt-4">Vyberte si, co právě potřebujete.</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+          <div class="bg-white p-8 text-center shadow-sm border-t-4 border-earth"><h4 class="font-heading text-lg mb-3">Možná vaše tělo potřebuje uvolnit.</h4></div>
+          <div class="bg-white p-8 text-center shadow-sm border-t-4 border-sage"><h4 class="font-heading text-lg mb-3">Možná potřebujete zpomalit.</h4></div>
+          <div class="bg-white p-8 text-center shadow-sm border-t-4 border-clay"><h4 class="font-heading text-lg mb-3">Možná toužíte po vědomém doteku.</h4></div>
+          <div class="bg-white p-8 text-center shadow-sm border-t-4 border-dark"><h4 class="font-heading text-lg mb-3">A možná si jednoduše chcete dopřát chvíli, kdy nemusíte nic.</h4></div>
+        </div>
+        <div class="text-center max-w-2xl mx-auto">
+          <p class="mb-8 font-light text-dark/80">Prohlédněte si jednotlivé služby a naše průvodce a rezervujte si svůj termín přímo u konkrétního poskytovatele.</p>
+          <p class="mb-8 text-xs text-earth uppercase tracking-wider font-medium">Masáže | práce s tělem | vědomý dotek | individuální péče | další služby</p>
+          <p class="mb-8 font-medium text-dark font-heading text-xl italic">Dopřejte si chvíli, která bude jen vaše.</p>
+          <a href="#treatments" class="inline-block px-8 py-4 bg-dark text-cream text-sm tracking-widest uppercase hover:bg-earth transition">PROHLÉDNOUT SLUŽBY</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="py-16 bg-sage/10 text-center">
+      <div class="max-w-3xl mx-auto px-4">
+        <h2 class="font-heading text-3xl mb-4">Kontakt a rezervace</h2>
+        <p class="text-dark/80">Pro rezervaci prostoru nebo dotazy nám prosím napište prostřednictvím kontaktu, který vám poskytlo Centrum Přítomnost.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-dark text-cream/70 py-12 text-center text-sm font-light">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col items-center">
+      <a href="#home" class="font-heading text-2xl tracking-widest text-cream uppercase mb-6">Přítomnost</a>
+      <div class="w-full border-t border-cream/20 pt-8 flex flex-col md:flex-row justify-between items-center text-xs tracking-wider uppercase">
+        <p>&copy; 2026 Centrum Přítomnost</p>
+        <p class="mt-4 md:mt-0">Designed by Alansm Solutions</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
