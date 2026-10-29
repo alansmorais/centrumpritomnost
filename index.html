@@ -15,11 +15,11 @@
       theme: {
         extend: {
           colors: {
-            cream: '#F9F6F0',
-            earth: '#8C7662',
-            sage: '#A2AA96',
-            dark: '#2C2A29',
-            clay: '#C28F79'
+            cream: '#F6F1E5',
+            earth: '#454B2D',
+            sage: '#A5AA8A',
+            dark: '#303126',
+            clay: '#B89556'
           },
           fontFamily: {
             heading: ['Lora', 'serif'],
@@ -30,10 +30,10 @@
     };
   </script>
   <style>
-    html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
-    body { background-color: #F9F6F0; color: #2C2A29; }
+    html { scroll-behavior: smooth; scroll-padding-top: 10rem; }
+    body { background-color: #F6F1E5; color: #303126; }
     .bg-hero {
-      background-color: #2C2A29;
+      background-color: #303126;
       background-image: linear-gradient(rgba(44, 42, 41, 0.7), rgba(44, 42, 41, 0.7)), url('https://images.unsplash.com/photo-1545389336-cf090694435e?q=80&w=2000&auto=format&fit=crop');
       background-size: cover;
       background-position: center;
@@ -43,8 +43,8 @@
 <body class="font-body antialiased">
   <nav class="fixed top-0 w-full z-50 bg-cream/90 backdrop-blur-md border-b border-earth/20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center h-20">
-        <a href="#home" class="font-heading text-2xl tracking-widest text-earth uppercase" aria-label="Centrum Přítomnost – úvod">Přítomnost</a>
+      <div class="flex justify-between items-center min-h-[170px] py-2">
+        <a href="#home" class="flex items-center gap-3" aria-label="Centrum Přítomnost – úvod"><span class="inline-flex h-[150px] w-[150px] shrink-0 items-center justify-center rounded-full border-2 border-[#B89556] bg-[#F6F1E5] px-3 text-center font-heading text-xl leading-tight tracking-wide text-[#454B2D] shadow-sm">Přítomnost</span></a>
         <div class="hidden md:flex space-x-8 text-sm tracking-wider uppercase">
           <a href="#rentals" class="text-dark hover:text-earth transition">Prostor</a>
           <a href="#events" class="text-dark hover:text-earth transition">Události</a>
