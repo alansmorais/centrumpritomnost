@@ -53,12 +53,35 @@ function setupCentrum() {
 }
 
 function doGet(e) {
-  const action = e && e.parameter ? e.parameter.action : '';
-  if (action === 'availability') {
-    const result = getAvailability_(e.parameter.date);
-    return jsonOutput_(result);
+  try {
+    const action = getQueryParam_(e, 'action');
+    if (action === 'availability') {
+      const dateString = getQueryParam_(e, 'date');
+      return jsonOutput_(getAvailability_(dateString));
+    }
+    return jsonOutput_({ ok: true, service: 'Centrum Přítomnost booking backend', status: 'ready' });
+  } catch (err) {
+    return jsonOutput_({ ok: false, error: err.message || 'Unable to process request.' });
   }
-  return jsonOutput_({ ok: true, service: 'Centrum Přítomnost booking backend', status: 'ready' });
+}
+
+function getQueryParam_(e, name) {
+  if (e && e.parameter && e.parameter[name] != null && e.parameter[name] !== '') {
+    return String(e.parameter[name]).trim();
+  }
+  if (e && e.parameters && e.parameters[name] && e.parameters[name].length) {
+    return String(e.parameters[name][0]).trim();
+  }
+  const query = e && e.queryString ? String(e.queryString) : '';
+  for (const part of query.split('&')) {
+    if (!part) continue;
+    const pieces = part.split('=');
+    const key = decodeURIComponent((pieces.shift() || '').replace(/\+/g, ' '));
+    if (key === name) {
+      return decodeURIComponent(pieces.join('=').replace(/\+/g, ' ')).trim();
+    }
+  }
+  return '';
 }
 
 function doPost(e) {
