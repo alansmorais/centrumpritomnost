@@ -72,7 +72,7 @@ function doPost(e) {
 }
 
 function getAvailability_(dateString) {
-  if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(dateString || '')) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateString || '')) {
     return { ok: false, error: 'Invalid date. Use YYYY-MM-DD.' };
   }
   const start = new Date(dateString + 'T00:00:00');
@@ -92,12 +92,12 @@ function createRequest_(data) {
   required.forEach(key => {
     if (!String(data[key] || '').trim()) throw new Error('Please complete all required fields.');
   });
-  if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(data.date)) throw new Error('Invalid date.');
-  if (!/^([01]\\d|2[0-3]):[0-5]\\d$/.test(data.startTime)) throw new Error('Invalid start time.');
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(data.date)) throw new Error('Invalid date.');
+  if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(data.startTime)) throw new Error('Invalid start time.');
   const duration = Number(data.duration);
   if (!Number.isInteger(duration) || duration < 30 || duration > 720) throw new Error('Invalid duration.');
   const email = String(data.email).trim();
-  if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) throw new Error('Invalid email address.');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Invalid email address.');
 
   const start = new Date(data.date + 'T' + data.startTime + ':00');
   const end = new Date(start.getTime() + duration * 60000);
@@ -126,7 +126,7 @@ function createRequest_(data) {
       'Email: ' + email,
       'Phone: ' + data.phone,
       'Message: ' + (data.message || '')
-    ].join('\\n');
+    ].join('\n');
 
     const event = calendar.createEvent(title, start, end, { description: description });
     sheet.appendRow([
@@ -139,19 +139,19 @@ function createRequest_(data) {
     MailApp.sendEmail({
       to: CONFIG.ADMIN_EMAIL,
       subject: 'New booking request — Centrum Přítomnost',
-      body: 'A new booking request is waiting for your review.\\n\\n' +
-        'Category: ' + data.category + '\\nService: ' + data.service +
-        '\\nDate and time: ' + formattedStart + '\\nDuration: ' + duration + ' minutes' +
-        '\\nCustomer: ' + data.name + '\\nEmail: ' + email +
-        '\\nPhone: ' + data.phone + '\\nMessage: ' + (data.message || '') +
-        '\\n\\nThe calendar slot is temporarily blocked as PENDING. Contact the customer to confirm or propose another time.'
+      body: 'A new booking request is waiting for your review.\n\n' +
+        'Category: ' + data.category + '\nService: ' + data.service +
+        '\nDate and time: ' + formattedStart + '\nDuration: ' + duration + ' minutes' +
+        '\nCustomer: ' + data.name + '\nEmail: ' + email +
+        '\nPhone: ' + data.phone + '\nMessage: ' + (data.message || '') +
+        '\n\nThe calendar slot is temporarily blocked as PENDING. Contact the customer to confirm or propose another time.'
     });
     MailApp.sendEmail({
       to: email,
       subject: 'We received your request — Centrum Přítomnost',
-      body: 'Hello ' + data.name + ',\\n\\nWe have received your booking request for ' +
-        data.service + ' on ' + formattedStart + '.\\n\\nThis is not yet a confirmed reservation. ' +
-        'We will contact you after reviewing availability.\\n\\nCentrum Přítomnost'
+      body: 'Hello ' + data.name + ',\n\nWe have received your booking request for ' +
+        data.service + ' on ' + formattedStart + '.\n\nThis is not yet a confirmed reservation. ' +
+        'We will contact you after reviewing availability.\n\nCentrum Přítomnost'
     });
     return { ok: true, requestId: id, status: 'PENDING' };
   } finally {
