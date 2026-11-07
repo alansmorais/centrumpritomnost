@@ -182,6 +182,27 @@ function createRequest_(data) {
   }
 }
 
+// Manual one-time test. Run this function from the Apps Script editor only when ready.
+function runBookingTestOnce() {
+  const props = PropertiesService.getScriptProperties();
+  if (props.getProperty('CENTRUM_BOOKING_TEST_DONE') === 'yes') {
+    throw new Error('The booking test has already been submitted. Remove the test event/request manually before retrying.');
+  }
+  const result = createRequest_({
+    category: 'Rental of space',
+    service: 'Test booking',
+    date: '2026-11-09',
+    startTime: '10:00',
+    duration: '30',
+    name: 'Alan Piquê Moraes',
+    email: 'Alanpkmorais@gmail.com',
+    phone: '12345678901',
+    message: 'One-time technical test booking. Please disregard after verification.'
+  });
+  if (result && result.ok) props.setProperty('CENTRUM_BOOKING_TEST_DONE', 'yes');
+  return result;
+}
+
 function jsonOutput_(value) {
   return ContentService.createTextOutput(JSON.stringify(value))
     .setMimeType(ContentService.MimeType.JSON);
