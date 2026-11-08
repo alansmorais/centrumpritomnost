@@ -88,6 +88,21 @@
     .slot-button:hover,.slot-button.selected{background:var(--olive);color:#fff}
     .slot-button:disabled{border-color:var(--line);background:#f0eee6;color:#999;cursor:not-allowed;text-decoration:line-through}
 
+
+    .booking-open{margin-top:18px}
+    .booking-modal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(25,27,19,.58)}
+    .booking-modal.is-open{display:flex}
+    .booking-dialog{position:relative;width:min(560px,100%);max-height:min(88vh,760px);overflow:auto;background:var(--paper);border:1px solid var(--line);padding:26px;box-shadow:0 18px 70px rgba(0,0,0,.22)}
+    .booking-dialog h2{font-size:30px;margin:0 42px 8px 0}
+    .booking-close{position:absolute;right:16px;top:14px;width:38px;height:38px;border:1px solid var(--line);background:transparent;color:var(--olive);font-size:24px;cursor:pointer}
+    .booking-intro{font-size:13px;color:var(--muted);margin:0 0 18px}
+    .booking-dialog .availability{padding:0;margin:0;border:0;max-width:none;background:transparent}
+    .booking-dialog .calendar-day{min-height:42px}
+    .booking-dialog .slot-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .booking-dialog .availability-status{max-height:230px;overflow:auto}
+    .booking-modal-open{overflow:hidden}
+    @media(max-width:520px){.booking-dialog{padding:20px 15px}.booking-dialog h2{font-size:25px}.booking-dialog .calendar-day{min-height:38px}.booking-dialog .slot-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
     @media(max-width:800px){.topbar{height:130px}.links{gap:14px;font-size:9px}.brand{font-size:20px}.brand img{width:330px;height:108px;flex:0 0 330px}.rental-grid{grid-template-columns:1fr;gap:42px}.photo-grid img{height:220px}.service-cards{grid-template-columns:1fr 1fr}.event-gallery,.room-gallery{grid-template-columns:1fr 1fr}.hero{min-height:620px}section{padding:75px 0}}
     @media(max-width:520px){.wrap{width:calc(100% - 24px)}.topbar{height:auto;min-height:104px}.nav{padding:6px 0;align-items:center;gap:10px}.links{gap:8px;letter-spacing:.04em}.brand{font-size:0;gap:0}.brand img{width:230px;height:82px;flex:0 0 230px}.hero{min-height:560px}.hero:after{inset:10px}.hero-content{padding:56px 18px}.hero p{font-size:15px}.photo-grid img{height:170px}.event-gallery,.room-gallery{grid-template-columns:1fr 1fr;gap:10px}.event-gallery img,.room-gallery img{height:180px}.service-cards{gap:10px}.service-card{padding:22px 12px}.service-card h3{font-size:17px}.footer-inner{flex-direction:column;text-align:center}}
   </style>
@@ -129,7 +144,7 @@
         <p>Ať už potřebujete prostor pro práci, setkání, oslavu nebo společný zážitek, můžete si ho vytvořit přesně podle sebe.</p>
         <p class="tags">Pronájem prostoru | občerstvení | jednodenní akce | semináře | workshopy | setkání | oslavy</p>
         <p><strong>Přijďte si vytvořit svůj vlastní den v Přítomnosti.</strong></p>
-        <a class="btn" href="#contact">Rezervovat prostor</a>
+        <a class="btn booking-open" href="#booking" data-open-booking>Rezervovat prostor</a>
       </div>
       <div class="photo-grid" aria-label="Fotografie prostor">
         <img src="assets/main-room-wide.jpeg" alt="Světlý prostor pro setkávání" loading="lazy">
@@ -194,13 +209,12 @@
     </div>
   </section>
 
-  <section id="availability" class="soft">
-    <div class="wrap">
-      <div class="intro">
-        <div class="section-label">Google Calendar · Centrum Přítomnost</div>
-        <h2>Podívejte se na obsazenost prostoru.</h2>
-        <p>Vyberte den v měsíčním kalendáři a zobrazíme obsazenost podle kalendáře Centrum Přítomnost.</p>
-      </div>
+  <div class="booking-modal" id="booking-modal" aria-hidden="true">
+    <div class="booking-dialog" role="dialog" aria-modal="true" aria-labelledby="booking-title">
+      <button class="booking-close" type="button" aria-label="Zavřít" data-close-booking>×</button>
+      <div class="section-label">Centrum Přítomnost · Rezervace</div>
+      <h2 id="booking-title">Vyberte si termín.</h2>
+      <p class="booking-intro">Zvolte den a zobrazíme obsazenost podle našeho Google kalendáře. Odeslání žádosti zatím není potvrzením rezervace.</p>
       <div class="availability">
         <div class="month-head">
           <button class="btn" id="previous-month" type="button" aria-label="Předchozí měsíc">‹</button>
@@ -210,10 +224,10 @@
         <div class="calendar-grid" id="calendar-grid" aria-label="Měsíční kalendář"></div>
         <div class="calendar-selected" id="calendar-selected-date">Vyberte den.</div>
         <div id="availability-result" class="availability-status" role="status" aria-live="polite">Vyberte datum a zkontrolujte kalendář Centrum Přítomnost.</div>
-        <div class="availability-note">Zobrazení událostí z kalendáře není samo o sobě potvrzením rezervace. Volné termíny budou potvrzeny podle provozní doby a po kontrole správcem.</div>
+        <div class="availability-note">Zobrazení volného času je předběžné. Rezervaci potvrdí až správce.</div>
       </div>
     </div>
-  </section>
+  </div>
 
   <section class="contact" id="contact">
     <div class="wrap">
@@ -238,7 +252,24 @@
   const result = document.getElementById('availability-result');
   const previous = document.getElementById('previous-month');
   const next = document.getElementById('next-month');
-  if (!grid || !title || !result) return;
+  const modal=document.getElementById('booking-modal');
+  if (!grid || !title || !result || !modal) return;
+
+  function openBooking(event){
+    if(event) event.preventDefault();
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden','false');
+    document.body.classList.add('booking-modal-open');
+  }
+  function closeBooking(){
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden','true');
+    document.body.classList.remove('booking-modal-open');
+  }
+  document.querySelectorAll('[data-open-booking]').forEach(el=>el.addEventListener('click',openBooking));
+  modal.querySelectorAll('[data-close-booking]').forEach(el=>el.addEventListener('click',closeBooking));
+  modal.addEventListener('click',event=>{if(event.target===modal)closeBooking();});
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&modal.classList.contains('is-open'))closeBooking();});
 
   const today = new Date();
   today.setHours(0,0,0,0);
@@ -295,7 +326,7 @@
     const callbackName='__centrumAvailability_'+Date.now()+'_'+Math.floor(Math.random()*100000);
     const script=document.createElement('script');
     let finished=false;
-    const timeout=window.setTimeout(()=>finishError('Kalendář nyní neodpovídá. Zkuste to prosím znovu.'),15000);
+    const timeout=window.setTimeout(()=>finishError('Google Calendar nevrátil odpověď. Zkontrolujte prosím veřejný přístup k nasazení Apps Scriptu a zkuste to znovu.'),20000);
     function cleanup(){
       if(finished)return;
       finished=true;clearTimeout(timeout);script.remove();
@@ -352,6 +383,8 @@
     url.searchParams.set('action','availability');
     url.searchParams.set('date',date);
     url.searchParams.set('callback',callbackName);
+    url.searchParams.set('_',String(Date.now()));
+    script.async=true;
     script.src=url.toString();
     document.head.appendChild(script);
   }
@@ -363,7 +396,6 @@
     shownMonth=new Date(shownMonth.getFullYear(),shownMonth.getMonth()+1,1);renderCalendar();
   });
   renderCalendar();
-  selectDate(today);
 })();
 </script>
 
