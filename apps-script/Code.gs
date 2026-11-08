@@ -61,7 +61,13 @@ function doGet(e) {
     }
     return jsonOutput_({ ok: true, service: 'Centrum Přítomnost booking backend', status: 'ready' });
   } catch (err) {
-    return jsonOutput_({ ok: false, error: err.message || 'Unable to process request.' });
+    const error = { ok: false, error: err.message || 'Unable to process request.' };
+    // Preserve JSONP on availability errors so the browser receives a readable
+    // error through its callback instead of a misleading script-load failure.
+    if (getQueryParam_(e, 'action') === 'availability' && getQueryParam_(e, 'callback')) {
+      return availabilityOutput_(e, error);
+    }
+    return jsonOutput_(error);
   }
 }
 
