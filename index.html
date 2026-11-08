@@ -83,6 +83,10 @@
     .availability-list{margin:12px 0 0;padding-left:20px;color:var(--ink);font-size:14px}
     .availability-note{font-size:12px;color:var(--muted);margin-top:16px}
     .availability-loading{opacity:.7}
+    .slot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:16px}
+    .slot-button{border:1px solid var(--olive2);background:#fffdf7;color:var(--olive);padding:11px 8px;font:inherit;font-size:13px;cursor:pointer}
+    .slot-button:hover,.slot-button.selected{background:var(--olive);color:#fff}
+    .slot-button:disabled{border-color:var(--line);background:#f0eee6;color:#999;cursor:not-allowed;text-decoration:line-through}
 
     @media(max-width:800px){.topbar{height:130px}.links{gap:14px;font-size:9px}.brand{font-size:20px}.brand img{width:330px;height:108px;flex:0 0 330px}.rental-grid{grid-template-columns:1fr;gap:42px}.photo-grid img{height:220px}.service-cards{grid-template-columns:1fr 1fr}.event-gallery,.room-gallery{grid-template-columns:1fr 1fr}.hero{min-height:620px}section{padding:75px 0}}
     @media(max-width:520px){.wrap{width:calc(100% - 24px)}.topbar{height:auto;min-height:104px}.nav{padding:6px 0;align-items:center;gap:10px}.links{gap:8px;letter-spacing:.04em}.brand{font-size:0;gap:0}.brand img{width:230px;height:82px;flex:0 0 230px}.hero{min-height:560px}.hero:after{inset:10px}.hero-content{padding:56px 18px}.hero p{font-size:15px}.photo-grid img{height:170px}.event-gallery,.room-gallery{grid-template-columns:1fr 1fr;gap:10px}.event-gallery img,.room-gallery img{height:180px}.service-cards{gap:10px}.service-card{padding:22px 12px}.service-card h3{font-size:17px}.footer-inner{flex-direction:column;text-align:center}}
@@ -309,21 +313,39 @@
       if(!data||data.ok!==true||!Array.isArray(data.busy)){
         result.textContent=(data&&data.error)||'Nepodařilo se načíst dostupnost kalendáře.';return;
       }
-      if(data.busy.length===0){
-        result.textContent='V kalendáři zatím pro tento den není zapsaná žádná událost.';
-        const note=document.createElement('p');
-        note.textContent='To ještě nepotvrzuje volný termín — provozní dobu a možnost rezervace je třeba ověřit.';
-        result.appendChild(note);return;
+      const busy=data.busy;
+      result.textContent='Volné hodinové začátky (rezervace zatím není potvrzena):';
+      const slots=document.createElement('div');slots.className='slot-grid';
+      const now=new Date();
+      for(let hour=0;hour<24;hour++){
+        const start=new Date(date+'T'+String(hour).padStart(2,'0')+':00:00+01:00');
+        const end=new Date(start.getTime()+60*60000);
+        const overlaps=busy.some(event=>{
+          const busyStart=new Date(event.start);
+          const busyEnd=new Date(event.end);
+          return start<busyEnd && end>busyStart;
+        });
+        const button=document.createElement('button');
+        button.type='button';button.className='slot-button';
+        button.textContent=String(hour).padStart(2,'0')+':00';
+        button.disabled=overlaps || end<=now;
+        button.setAttribute('aria-label',button.textContent+(overlaps?' — obsazeno':' — předběžně volno'));
+        button.addEventListener('click',()=>{
+          slots.querySelectorAll('.slot-button').forEach(item=>item.classList.remove('selected'));
+          button.classList.add('selected');
+          const chosen=document.createElement('p');
+          chosen.className='availability-note';
+          chosen.textContent='Vybraný začátek: '+button.textContent+'. Tento termín bude možné odeslat jako žádost v dalším kroku.';
+          const oldChoice=result.querySelector('.slot-choice');
+          if(oldChoice)oldChoice.remove();
+          chosen.classList.add('slot-choice');result.appendChild(chosen);
+        });
+        slots.appendChild(button);
       }
-      result.textContent='V kalendáři jsou pro tento den zapsané tyto události:';
-      const list=document.createElement('ul');list.className='availability-list';
-      data.busy.forEach(event=>{
-        const item=document.createElement('li');
-        const fmt=value=>new Intl.DateTimeFormat('cs-CZ',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Prague'}).format(new Date(value));
-        item.textContent=fmt(event.start)+'–'+fmt(event.end)+' · Obsazeno';
-        list.appendChild(item);
-      });
-      result.appendChild(list);
+      result.appendChild(slots);
+      const note=document.createElement('p');note.className='availability-note';
+      note.textContent='Hodinové začátky jsou zobrazeny průběžně po celý den. Termín je pouze předběžně volný a bude potvrzen až po odeslání žádosti a schválení správcem.';
+      result.appendChild(note);
     };
     script.onerror=()=>finishError('Nepodařilo se spojit s rezervačním kalendářem. Zkuste to prosím později.');
     const url=new URL(endpoint);
