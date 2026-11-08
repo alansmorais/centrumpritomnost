@@ -116,8 +116,7 @@ function getAvailability_(dateString) {
   if (!calendar) throw new Error('Calendar is not accessible.');
   const events = calendar.getEvents(start, end).map(event => ({
     start: Utilities.formatDate(event.getStartTime(), CONFIG.TIME_ZONE, "yyyy-MM-dd'T'HH:mm:ss"),
-    end: Utilities.formatDate(event.getEndTime(), CONFIG.TIME_ZONE, "yyyy-MM-dd'T'HH:mm:ss"),
-    title: event.getTitle()
+    end: Utilities.formatDate(event.getEndTime(), CONFIG.TIME_ZONE, "yyyy-MM-dd'T'HH:mm:ss")
   }));
   return { ok: true, date: dateString, busy: events, timeZone: CONFIG.TIME_ZONE };
 }
