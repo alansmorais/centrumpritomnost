@@ -7,7 +7,7 @@
 const CONFIG = {
   SPREADSHEET_ID: '1h1uEVdEO_8-4c6YwMMuHA3t9SvqY3Nqofc8nSPiPY8k',
   ADMIN_EMAIL: 'centrumpritomnost@gmail.com',
-  CALENDAR_ID: 'primary',
+  CALENDAR_ID: 'centrumpritomnost@gmail.com',
   TIME_ZONE: 'Europe/Prague',
   REQUEST_SHEET: 'Requests',
   SETTINGS_SHEET: 'Settings',
