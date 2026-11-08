@@ -78,12 +78,12 @@ function doPost(e){
   return postMessageOutput_(getParam_(e,'responseToken'),response);
 }
 function postMessageOutput_(token,result){
-  const safe=JSON.stringify({type:'centrum-booking-result',token:token,ok:!!result.ok,error:result.error||'',requestId:result.requestId||''}).replace(/</g,'\\u003c');
+  const safe=JSON.stringify({type:'centrum-booking-result',token:token,ok:!!result.ok,error:result.error||'',requestId:result.requestId||''}).replace(/</g,String.fromCharCode(92)+'u003c');
   const page='<!doctype html><html><head><meta charset="utf-8"></head><body><script>window.parent.postMessage('+safe+', "*");</script><p>Request processed.</p></body></html>';
   return HtmlService.createHtmlOutput(page).setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 function getAvailability_(dateString){
-  if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(dateString||''))return {ok:false,error:'Invalid date. Use YYYY-MM-DD.'};
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(dateString||''))return {ok:false,error:'Invalid date. Use YYYY-MM-DD.'};
   const start=localDateTime_(dateString,'00:00'),end=localDateTime_(dateString,'23:59');
   const calendar=CalendarApp.getCalendarById(CONFIG.CALENDAR_ID);
   if(!calendar)throw new Error('Calendar is not accessible.');
@@ -104,16 +104,16 @@ function localDateTime_(dateString,timeString){
 function createRequest_(data){
   const required=['category','service','date','startTime','duration','name','email','phone'];
   required.forEach(k=>{if(!String(data[k]||'').trim())throw new Error('Please complete all required fields.');});
-  if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(data.date))throw new Error('Invalid date.');
-  if(!/^([01]\\d|2[0-3]):[0-5]\\d$/.test(data.startTime))throw new Error('Invalid start time.');
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(data.date))throw new Error('Invalid date.');
+  if(!/^([01]\d|2[0-3]):[0-5]\d$/.test(data.startTime))throw new Error('Invalid start time.');
   const duration=Number(data.duration);
   if(!Number.isInteger(duration)||duration<30||duration>43200)throw new Error('Invalid reservation duration.');
   const email=String(data.email).trim();
-  if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email))throw new Error('Invalid email address.');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))throw new Error('Invalid email address.');
   const start=localDateTime_(data.date,data.startTime);
   let end;
   if(data.endDate&&data.endTime){
-    if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(data.endDate)||!/^([01]\\d|2[0-3]):[0-5]\\d$/.test(data.endTime))throw new Error('Invalid checkout date or time.');
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(data.endDate)||!/^([01]\d|2[0-3]):[0-5]\d$/.test(data.endTime))throw new Error('Invalid checkout date or time.');
     end=localDateTime_(data.endDate,data.endTime);
     if(Math.abs(Math.round((end-start)/60000)-duration)>1)throw new Error('Reservation duration does not match the selected end time.');
   }else end=new Date(start.getTime()+duration*60000);
@@ -136,15 +136,15 @@ function createRequest_(data){
       'Category: '+data.category,'Service: '+data.service,'Customer: '+name,
       'Email: '+email,'Phone: '+phone,'Message: '+message,
       'End: '+Utilities.formatDate(end,CONFIG.TIME_ZONE,'dd.MM.yyyy HH:mm')
-    ].join('\\n');
+    ].join('\n');
     const event=calendar.createEvent(title,start,end,{description:description});
     try{
       sheet.appendRow([id,new Date(),'PENDING',data.category,data.service,data.date,data.startTime,duration,name,email,phone,message,event.getId(),data.endDate||Utilities.formatDate(end,CONFIG.TIME_ZONE,'yyyy-MM-dd'),data.endTime||Utilities.formatDate(end,CONFIG.TIME_ZONE,'HH:mm'),nights]);
     }catch(sheetError){calendar.deleteEvent(event.getId());throw new Error('Could not save the request in the spreadsheet. '+sheetError.message);}
     const formatted=Utilities.formatDate(start,CONFIG.TIME_ZONE,'dd.MM.yyyy HH:mm')+' – '+Utilities.formatDate(end,CONFIG.TIME_ZONE,'dd.MM.yyyy HH:mm');
     try{
-      MailApp.sendEmail({to:CONFIG.ADMIN_EMAIL,subject:'New booking request — Centrum Přítomnost',body:'A new booking request is waiting for manual approval.\\n\\nCategory: '+data.category+'\\nService: '+data.service+'\\nDate and time: '+formatted+'\\nDuration: '+duration+' minutes\\nCustomer: '+name+'\\nEmail: '+email+'\\nPhone: '+phone+'\\nMessage: '+message+'\\n\\nThe calendar slot is temporarily blocked as PENDING.'});
-      MailApp.sendEmail({to:email,subject:'We received your request — Centrum Přítomnost',body:'Hello '+name+',\\n\\nWe received your request for '+data.service+' ('+formatted+'). This is not a confirmed reservation. We will contact you after reviewing it.\\n\\nCentrum Přítomnost'});
+      MailApp.sendEmail({to:CONFIG.ADMIN_EMAIL,subject:'New booking request — Centrum Přítomnost',body:'A new booking request is waiting for manual approval.\n\nCategory: '+data.category+'\nService: '+data.service+'\nDate and time: '+formatted+'\nDuration: '+duration+' minutes\nCustomer: '+name+'\nEmail: '+email+'\nPhone: '+phone+'\nMessage: '+message+'\n\nThe calendar slot is temporarily blocked as PENDING.'});
+      MailApp.sendEmail({to:email,subject:'We received your request — Centrum Přítomnost',body:'Hello '+name+',\n\nWe received your request for '+data.service+' ('+formatted+'). This is not a confirmed reservation. We will contact you after reviewing it.\n\nCentrum Přítomnost'});
     }catch(mailError){console.error('Request saved, but notification email failed: '+mailError.message);}
     return {ok:true,requestId:id,status:'PENDING'};
   }finally{lock.releaseLock();}
