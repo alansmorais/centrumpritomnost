@@ -374,7 +374,20 @@
   $('previous-month').addEventListener('click',()=>{shownMonth=new Date(shownMonth.getFullYear(),shownMonth.getMonth()-1,1);renderCalendar();});
   $('next-month').addEventListener('click',()=>{shownMonth=new Date(shownMonth.getFullYear(),shownMonth.getMonth()+1,1);renderCalendar();});
   let awaitingResponse=false;
-  window.addEventListener('message',event=>{if(event.origin!=='https://script.google.com'&&event.origin!=='https://script.googleusercontent.com')return;const d=event.data;if(!d||d.type!=='centrum-booking-result'||d.token!==submitToken)return;awaitingResponse=false;$('booking-submit').disabled=false;feedback.hidden=false;feedback.textContent=d.ok?'Děkujeme! Vaše žádost byla odeslána. Termín je předběžně blokován a čeká na potvrzení Centrem Přítomnost.':'Žádost se nepodařilo odeslat: '+(d.error||'Neznámá chyba');if(d.ok){form.reset();customerFields.hidden=true;selectedStart='';checkAvailability(selectedDate);}});
+  const submitFrame=$('booking-submit-frame');
+  window.addEventListener('message',event=>{
+    // Apps Script may deliver the iframe response from different Google-controlled
+    // hosts depending on redirects and the signed-in browser session. Trust only
+    // messages from our dedicated submission iframe and require the one-time token.
+    if(!submitFrame||event.source!==submitFrame.contentWindow)return;
+    const d=event.data;
+    if(!d||d.type!=='centrum-booking-result'||!submitToken||d.token!==submitToken)return;
+    awaitingResponse=false;
+    $('booking-submit').disabled=false;
+    feedback.hidden=false;
+    feedback.textContent=d.ok?'Děkujeme! Vaše žádost byla odeslána. Termín je předběžně blokován a čeká na potvrzení Centrem Přítomnost.':'Žádost se nepodařilo odeslat: '+(d.error||'Neznámá chyba');
+    if(d.ok){form.reset();customerFields.hidden=true;selectedStart='';checkAvailability(selectedDate);}
+  });
   form.addEventListener('submit',e=>{
     if(!selectedDate||!selectedStart){e.preventDefault();feedback.hidden=false;feedback.textContent='Nejprve vyberte datum a čas.';return;}
     if(awaitingResponse){e.preventDefault();return;}
