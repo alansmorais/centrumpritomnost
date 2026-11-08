@@ -57,12 +57,24 @@ function doGet(e) {
     const action = getQueryParam_(e, 'action');
     if (action === 'availability') {
       const dateString = getQueryParam_(e, 'date');
-      return jsonOutput_(getAvailability_(dateString));
+      return availabilityOutput_(e, getAvailability_(dateString));
     }
     return jsonOutput_({ ok: true, service: 'Centrum Přítomnost booking backend', status: 'ready' });
   } catch (err) {
     return jsonOutput_({ ok: false, error: err.message || 'Unable to process request.' });
   }
+}
+
+function availabilityOutput_(e, value) {
+  const callback = getQueryParam_(e, 'callback');
+  if (callback) {
+    if (!/^[A-Za-z_$][0-9A-Za-z_$]*$/.test(callback)) {
+      return jsonOutput_({ ok: false, error: 'Invalid callback.' });
+    }
+    return ContentService.createTextOutput(callback + '(' + JSON.stringify(value) + ');')
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return jsonOutput_(value);
 }
 
 function getQueryParam_(e, name) {
