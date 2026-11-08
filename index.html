@@ -320,7 +320,7 @@
       data.busy.forEach(event=>{
         const item=document.createElement('li');
         const fmt=value=>new Intl.DateTimeFormat('cs-CZ',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Prague'}).format(new Date(value));
-        item.textContent=fmt(event.start)+'–'+fmt(event.end)+(event.title?' · '+event.title:'');
+        item.textContent=fmt(event.start)+'–'+fmt(event.end)+' · Obsazeno';
         list.appendChild(item);
       });
       result.appendChild(list);
