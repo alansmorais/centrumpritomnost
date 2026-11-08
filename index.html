@@ -66,8 +66,19 @@
 
     .availability{background:var(--paper);border:1px solid var(--line);padding:clamp(24px,4vw,42px);max-width:850px;margin:42px auto 0;text-align:left}
     .availability label{display:block;color:var(--olive);font-size:12px;font-weight:600;letter-spacing:.08em;margin-bottom:9px}
-    .availability input[type=date]{width:100%;max-width:320px;padding:13px 14px;border:1px solid var(--line);background:#fffdf7;color:var(--ink);font:inherit}
-    .availability button{cursor:pointer;margin-top:14px}
+    .month-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
+    .month-title{font-family:"Playfair Display",serif;color:var(--olive);font-size:24px}
+    .month-nav{display:flex;gap:8px}
+    .month-nav button{margin:0;min-width:42px;min-height:42px;padding:8px 12px}
+    .calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px}
+    .calendar-weekday{text-align:center;color:var(--muted);font-size:11px;font-weight:600;padding:8px 0}
+    .calendar-day{min-height:54px;margin:0;padding:8px 4px;border:1px solid var(--line);background:#fffdf7;color:var(--ink);font:inherit;font-size:14px}
+    .calendar-day:hover:not(:disabled),.calendar-day.selected{background:var(--olive);border-color:var(--olive);color:#fff}
+    .calendar-day:disabled{opacity:.3;cursor:not-allowed}
+    .calendar-day.today{border-color:var(--gold);font-weight:700}
+    .calendar-selected{margin-top:18px;color:var(--olive);font-size:14px;font-weight:600}
+    .availability button{cursor:pointer}
+    @media(max-width:520px){.calendar-grid{gap:4px}.calendar-day{min-height:43px;padding:5px 2px;font-size:12px}.month-title{font-size:20px}}
     .availability-status{margin:20px 0 0;padding:15px 18px;background:#f2f0e5;border-left:3px solid var(--gold);font-size:14px}
     .availability-list{margin:12px 0 0;padding-left:20px;color:var(--ink);font-size:14px}
     .availability-note{font-size:12px;color:var(--muted);margin-top:16px}
@@ -184,12 +195,16 @@
       <div class="intro">
         <div class="section-label">Google Calendar · Centrum Přítomnost</div>
         <h2>Podívejte se na obsazenost prostoru.</h2>
-        <p>Vyberte datum a zobrazíme události, které jsou v daný den zapsané v našem kalendáři.</p>
+        <p>Vyberte den v měsíčním kalendáři a zobrazíme obsazenost podle kalendáře Centrum Přítomnost.</p>
       </div>
       <div class="availability">
-        <label for="availability-date">Vyberte datum</label>
-        <input id="availability-date" type="date">
-        <button class="btn" id="check-availability" type="button">Zkontrolovat kalendář</button>
+        <div class="month-head">
+          <button class="btn" id="previous-month" type="button" aria-label="Předchozí měsíc">‹</button>
+          <div class="month-title" id="calendar-month-title" aria-live="polite"></div>
+          <button class="btn" id="next-month" type="button" aria-label="Další měsíc">›</button>
+        </div>
+        <div class="calendar-grid" id="calendar-grid" aria-label="Měsíční kalendář"></div>
+        <div class="calendar-selected" id="calendar-selected-date">Vyberte den.</div>
         <div id="availability-result" class="availability-status" role="status" aria-live="polite">Vyberte datum a zkontrolujte kalendář Centrum Přítomnost.</div>
         <div class="availability-note">Zobrazení událostí z kalendáře není samo o sobě potvrzením rezervace. Volné termíny budou potvrzeny podle provozní doby a po kontrole správcem.</div>
       </div>
@@ -213,86 +228,120 @@
 <script>
 (() => {
   const endpoint = 'https://script.google.com/macros/s/AKfycbyZVA4GPX-M_QwLySfFNQZsODTu1YhL7TiPZ7kZYgtTIcmLY-DDzGAearX2CPT7SfMO/exec';
-  const dateInput = document.getElementById('availability-date');
-  const button = document.getElementById('check-availability');
+  const grid = document.getElementById('calendar-grid');
+  const title = document.getElementById('calendar-month-title');
+  const selectedLabel = document.getElementById('calendar-selected-date');
   const result = document.getElementById('availability-result');
-  if (!dateInput || !button || !result) return;
+  const previous = document.getElementById('previous-month');
+  const next = document.getElementById('next-month');
+  if (!grid || !title || !result) return;
 
   const today = new Date();
-  const localToday = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
-  dateInput.min = localToday;
-  dateInput.value = localToday;
+  today.setHours(0,0,0,0);
+  let shownMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  let selectedDate = '';
+  let requestToken = 0;
+  const weekdays = ['Po','Út','St','Čt','Pá','So','Ne'];
 
-  function showError(message) {
-    result.textContent = message;
-    result.classList.remove('availability-loading');
+  const dateKey = d => [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
+  const sameDay = (a,b) => dateKey(a) === dateKey(b);
+
+  function renderCalendar() {
+    title.textContent = new Intl.DateTimeFormat('cs-CZ',{month:'long',year:'numeric'}).format(shownMonth);
+    grid.replaceChildren();
+    weekdays.forEach(day => {
+      const label = document.createElement('div');
+      label.className = 'calendar-weekday';
+      label.textContent = day;
+      grid.appendChild(label);
+    });
+    const firstWeekday = (new Date(shownMonth.getFullYear(),shownMonth.getMonth(),1).getDay()+6)%7;
+    const daysInMonth = new Date(shownMonth.getFullYear(),shownMonth.getMonth()+1,0).getDate();
+    for(let i=0;i<firstWeekday;i++) grid.appendChild(document.createElement('div'));
+    for(let day=1;day<=daysInMonth;day++) {
+      const date = new Date(shownMonth.getFullYear(),shownMonth.getMonth(),day);
+      const button = document.createElement('button');
+      button.type='button';
+      button.className='calendar-day';
+      button.textContent=String(day);
+      button.disabled=date<today;
+      button.setAttribute('aria-label',new Intl.DateTimeFormat('cs-CZ',{dateStyle:'full'}).format(date));
+      if(sameDay(date,today)) button.classList.add('today');
+      if(selectedDate===dateKey(date)) {
+        button.classList.add('selected');
+        button.setAttribute('aria-pressed','true');
+      } else button.setAttribute('aria-pressed','false');
+      button.addEventListener('click',()=>selectDate(date));
+      grid.appendChild(button);
+    }
+    previous.disabled = shownMonth.getFullYear()===today.getFullYear() && shownMonth.getMonth()===today.getMonth();
   }
 
-  function checkAvailability() {
-    const date = dateInput.value;
-    if (!date) return showError('Nejprve vyberte datum.');
-    button.disabled = true;
-    result.textContent = 'Načítáme události z kalendáře Centrum Přítomnost…';
+  function selectDate(date) {
+    selectedDate=dateKey(date);
+    selectedLabel.textContent='Vybraný den: '+new Intl.DateTimeFormat('cs-CZ',{dateStyle:'full'}).format(date);
+    renderCalendar();
+    checkAvailability(selectedDate);
+  }
+
+  function checkAvailability(date) {
+    const token=++requestToken;
+    result.textContent='Načítáme události z kalendáře Centrum Přítomnost…';
     result.classList.add('availability-loading');
-
-    const callbackName = '__centrumAvailability_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
-    const script = document.createElement('script');
-    const timeout = window.setTimeout(() => finishError('Kalendář nyní neodpovídá. Zkuste to prosím znovu.'), 15000);
-    let finished = false;
-
-    function cleanup() {
-      if (finished) return;
-      finished = true;
-      clearTimeout(timeout);
-      button.disabled = false;
-      script.remove();
-      try { delete window[callbackName]; } catch (_) { window[callbackName] = undefined; }
+    const callbackName='__centrumAvailability_'+Date.now()+'_'+Math.floor(Math.random()*100000);
+    const script=document.createElement('script');
+    let finished=false;
+    const timeout=window.setTimeout(()=>finishError('Kalendář nyní neodpovídá. Zkuste to prosím znovu.'),15000);
+    function cleanup(){
+      if(finished)return;
+      finished=true;clearTimeout(timeout);script.remove();
+      try{delete window[callbackName];}catch(_){window[callbackName]=undefined;}
     }
-    function finishError(message) {
+    function finishError(message){
       cleanup();
-      showError(message);
+      if(token!==requestToken)return;
+      result.textContent=message;result.classList.remove('availability-loading');
     }
-
-    window[callbackName] = (data) => {
+    window[callbackName]=(data)=>{
       cleanup();
-      if (!data || data.ok !== true || !Array.isArray(data.busy)) {
-        showError((data && data.error) || 'Nepodařilo se načíst dostupnost kalendáře.');
-        return;
-      }
+      if(token!==requestToken)return;
       result.classList.remove('availability-loading');
-      if (data.busy.length === 0) {
-        result.textContent = 'V kalendáři zatím pro tento den není zapsaná žádná událost.';
-        const note = document.createElement('p');
-        note.textContent = 'To ještě nepotvrzuje volný termín — provozní dobu a možnost rezervace je třeba ověřit.';
-        result.appendChild(note);
-        return;
+      if(!data||data.ok!==true||!Array.isArray(data.busy)){
+        result.textContent=(data&&data.error)||'Nepodařilo se načíst dostupnost kalendáře.';return;
       }
-      result.textContent = 'V kalendáři jsou pro tento den zapsané tyto události:';
-      const list = document.createElement('ul');
-      list.className = 'availability-list';
-      data.busy.forEach(event => {
-        const item = document.createElement('li');
-        const start = new Date(event.start);
-        const end = new Date(event.end);
-        const fmt = value => new Intl.DateTimeFormat('cs-CZ', {hour:'2-digit', minute:'2-digit', timeZone:'Europe/Prague'}).format(value);
-        item.textContent = fmt(start) + '–' + fmt(end) + (event.title ? ' · ' + event.title : '');
+      if(data.busy.length===0){
+        result.textContent='V kalendáři zatím pro tento den není zapsaná žádná událost.';
+        const note=document.createElement('p');
+        note.textContent='To ještě nepotvrzuje volný termín — provozní dobu a možnost rezervace je třeba ověřit.';
+        result.appendChild(note);return;
+      }
+      result.textContent='V kalendáři jsou pro tento den zapsané tyto události:';
+      const list=document.createElement('ul');list.className='availability-list';
+      data.busy.forEach(event=>{
+        const item=document.createElement('li');
+        const fmt=value=>new Intl.DateTimeFormat('cs-CZ',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Prague'}).format(new Date(value));
+        item.textContent=fmt(event.start)+'–'+fmt(event.end)+(event.title?' · '+event.title:'');
         list.appendChild(item);
       });
       result.appendChild(list);
     };
-
-    script.onerror = () => finishError('Nepodařilo se spojit s rezervačním kalendářem. Zkuste to prosím později.');
-    const url = new URL(endpoint);
-    url.searchParams.set('action', 'availability');
-    url.searchParams.set('date', date);
-    url.searchParams.set('callback', callbackName);
-    script.src = url.toString();
+    script.onerror=()=>finishError('Nepodařilo se spojit s rezervačním kalendářem. Zkuste to prosím později.');
+    const url=new URL(endpoint);
+    url.searchParams.set('action','availability');
+    url.searchParams.set('date',date);
+    url.searchParams.set('callback',callbackName);
+    script.src=url.toString();
     document.head.appendChild(script);
   }
 
-  button.addEventListener('click', checkAvailability);
-  dateInput.addEventListener('change', checkAvailability);
-  checkAvailability();
+  previous.addEventListener('click',()=>{
+    shownMonth=new Date(shownMonth.getFullYear(),shownMonth.getMonth()-1,1);renderCalendar();
+  });
+  next.addEventListener('click',()=>{
+    shownMonth=new Date(shownMonth.getFullYear(),shownMonth.getMonth()+1,1);renderCalendar();
+  });
+  renderCalendar();
+  selectDate(today);
 })();
 </script>
 
