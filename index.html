@@ -63,6 +63,16 @@
     .contact h2{color:#fffdf5}.contact p{max-width:650px;margin:0 auto 26px;color:#e8e5d8}
     footer{padding:30px 0;color:var(--muted);font-size:11px;letter-spacing:.06em}
     .footer-inner{display:flex;align-items:center;justify-content:space-between;gap:20px}
+
+    .availability{background:var(--paper);border:1px solid var(--line);padding:clamp(24px,4vw,42px);max-width:850px;margin:42px auto 0;text-align:left}
+    .availability label{display:block;color:var(--olive);font-size:12px;font-weight:600;letter-spacing:.08em;margin-bottom:9px}
+    .availability input[type=date]{width:100%;max-width:320px;padding:13px 14px;border:1px solid var(--line);background:#fffdf7;color:var(--ink);font:inherit}
+    .availability button{cursor:pointer;margin-top:14px}
+    .availability-status{margin:20px 0 0;padding:15px 18px;background:#f2f0e5;border-left:3px solid var(--gold);font-size:14px}
+    .availability-list{margin:12px 0 0;padding-left:20px;color:var(--ink);font-size:14px}
+    .availability-note{font-size:12px;color:var(--muted);margin-top:16px}
+    .availability-loading{opacity:.7}
+
     @media(max-width:800px){.topbar{height:130px}.links{gap:14px;font-size:9px}.brand{font-size:20px}.brand img{width:330px;height:108px;flex:0 0 330px}.rental-grid{grid-template-columns:1fr;gap:42px}.photo-grid img{height:220px}.service-cards{grid-template-columns:1fr 1fr}.event-gallery,.room-gallery{grid-template-columns:1fr 1fr}.hero{min-height:620px}section{padding:75px 0}}
     @media(max-width:520px){.wrap{width:calc(100% - 24px)}.topbar{height:auto;min-height:104px}.nav{padding:6px 0;align-items:center;gap:10px}.links{gap:8px;letter-spacing:.04em}.brand{font-size:0;gap:0}.brand img{width:230px;height:82px;flex:0 0 230px}.hero{min-height:560px}.hero:after{inset:10px}.hero-content{padding:56px 18px}.hero p{font-size:15px}.photo-grid img{height:170px}.event-gallery,.room-gallery{grid-template-columns:1fr 1fr;gap:10px}.event-gallery img,.room-gallery img{height:180px}.service-cards{gap:10px}.service-card{padding:22px 12px}.service-card h3{font-size:17px}.footer-inner{flex-direction:column;text-align:center}}
   </style>
@@ -168,6 +178,24 @@
       </div>
     </div>
   </section>
+
+  <section id="availability" class="soft">
+    <div class="wrap">
+      <div class="intro">
+        <div class="section-label">Google Calendar · Centrum Přítomnost</div>
+        <h2>Podívejte se na obsazenost prostoru.</h2>
+        <p>Vyberte datum a zobrazíme události, které jsou v daný den zapsané v našem kalendáři.</p>
+      </div>
+      <div class="availability">
+        <label for="availability-date">Vyberte datum</label>
+        <input id="availability-date" type="date">
+        <button class="btn" id="check-availability" type="button">Zkontrolovat kalendář</button>
+        <div id="availability-result" class="availability-status" role="status" aria-live="polite">Vyberte datum a zkontrolujte kalendář Centrum Přítomnost.</div>
+        <div class="availability-note">Zobrazení událostí z kalendáře není samo o sobě potvrzením rezervace. Volné termíny budou potvrzeny podle provozní doby a po kontrole správcem.</div>
+      </div>
+    </div>
+  </section>
+
   <section class="contact" id="contact">
     <div class="wrap">
       <div class="section-label" style="color:#d6c79c">Centrum Přítomnost</div>
@@ -181,5 +209,92 @@
 <footer>
   <div class="wrap footer-inner"><span>© 2026 Centrum Přítomnost</span><span>Designed by Alansm Solutions</span></div>
 </footer>
+
+<script>
+(() => {
+  const endpoint = 'https://script.google.com/macros/s/AKfycbyZVA4GPX-M_QwLySfFNQZsODTu1YhL7TiPZ7kZYgtTIcmLY-DDzGAearX2CPT7SfMO/exec';
+  const dateInput = document.getElementById('availability-date');
+  const button = document.getElementById('check-availability');
+  const result = document.getElementById('availability-result');
+  if (!dateInput || !button || !result) return;
+
+  const today = new Date();
+  const localToday = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+  dateInput.min = localToday;
+  dateInput.value = localToday;
+
+  function showError(message) {
+    result.textContent = message;
+    result.classList.remove('availability-loading');
+  }
+
+  function checkAvailability() {
+    const date = dateInput.value;
+    if (!date) return showError('Nejprve vyberte datum.');
+    button.disabled = true;
+    result.textContent = 'Načítáme události z kalendáře Centrum Přítomnost…';
+    result.classList.add('availability-loading');
+
+    const callbackName = '__centrumAvailability_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+    const script = document.createElement('script');
+    const timeout = window.setTimeout(() => finishError('Kalendář nyní neodpovídá. Zkuste to prosím znovu.'), 15000);
+    let finished = false;
+
+    function cleanup() {
+      if (finished) return;
+      finished = true;
+      clearTimeout(timeout);
+      button.disabled = false;
+      script.remove();
+      try { delete window[callbackName]; } catch (_) { window[callbackName] = undefined; }
+    }
+    function finishError(message) {
+      cleanup();
+      showError(message);
+    }
+
+    window[callbackName] = (data) => {
+      cleanup();
+      if (!data || data.ok !== true || !Array.isArray(data.busy)) {
+        showError((data && data.error) || 'Nepodařilo se načíst dostupnost kalendáře.');
+        return;
+      }
+      result.classList.remove('availability-loading');
+      if (data.busy.length === 0) {
+        result.textContent = 'V kalendáři zatím pro tento den není zapsaná žádná událost.';
+        const note = document.createElement('p');
+        note.textContent = 'To ještě nepotvrzuje volný termín — provozní dobu a možnost rezervace je třeba ověřit.';
+        result.appendChild(note);
+        return;
+      }
+      result.textContent = 'V kalendáři jsou pro tento den zapsané tyto události:';
+      const list = document.createElement('ul');
+      list.className = 'availability-list';
+      data.busy.forEach(event => {
+        const item = document.createElement('li');
+        const start = new Date(event.start);
+        const end = new Date(event.end);
+        const fmt = value => new Intl.DateTimeFormat('cs-CZ', {hour:'2-digit', minute:'2-digit', timeZone:'Europe/Prague'}).format(value);
+        item.textContent = fmt(start) + '–' + fmt(end) + (event.title ? ' · ' + event.title : '');
+        list.appendChild(item);
+      });
+      result.appendChild(list);
+    };
+
+    script.onerror = () => finishError('Nepodařilo se spojit s rezervačním kalendářem. Zkuste to prosím později.');
+    const url = new URL(endpoint);
+    url.searchParams.set('action', 'availability');
+    url.searchParams.set('date', date);
+    url.searchParams.set('callback', callbackName);
+    script.src = url.toString();
+    document.head.appendChild(script);
+  }
+
+  button.addEventListener('click', checkAvailability);
+  dateInput.addEventListener('change', checkAvailability);
+  checkAvailability();
+})();
+</script>
+
 </body>
 </html>
