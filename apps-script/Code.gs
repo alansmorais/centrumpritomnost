@@ -203,6 +203,27 @@ function runBookingTestOnce() {
   return result;
 }
 
+// One-time verification that the explicitly configured Centrum calendar receives events.
+function runCentrumCalendarTestOnce() {
+  const props = PropertiesService.getScriptProperties();
+  if (props.getProperty('CENTRUM_CALENDAR_TEST_DONE') === 'yes') {
+    throw new Error('The Centrum calendar test has already been submitted.');
+  }
+  const result = createRequest_({
+    category: 'Rental of space',
+    service: 'Centrum calendar connection test',
+    date: '2026-11-09',
+    startTime: '11:00',
+    duration: '30',
+    name: 'Alan Piquê Moraes',
+    email: 'Alanpkmorais@gmail.com',
+    phone: '12345678901',
+    message: 'One-time technical test for the Centrum calendar connection. Please disregard after verification.'
+  });
+  if (result && result.ok) props.setProperty('CENTRUM_CALENDAR_TEST_DONE', 'yes');
+  return result;
+}
+
 function jsonOutput_(value) {
   return ContentService.createTextOutput(JSON.stringify(value))
     .setMimeType(ContentService.MimeType.JSON);
