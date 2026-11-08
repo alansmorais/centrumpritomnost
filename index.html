@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Preview deployment: isolated Cloudflare Pages project; production site remains unchanged. -->
 <html lang="cs">
 <head>
   <meta charset="UTF-8">
@@ -63,6 +64,54 @@
     .contact h2{color:#fffdf5}.contact p{max-width:650px;margin:0 auto 26px;color:#e8e5d8}
     footer{padding:30px 0;color:var(--muted);font-size:11px;letter-spacing:.06em}
     .footer-inner{display:flex;align-items:center;justify-content:space-between;gap:20px}
+
+    .availability{background:var(--paper);border:1px solid var(--line);padding:clamp(24px,4vw,42px);max-width:850px;margin:42px auto 0;text-align:left}
+    .availability label{display:block;color:var(--olive);font-size:12px;font-weight:600;letter-spacing:.08em;margin-bottom:9px}
+    .month-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
+    .month-title{font-family:"Playfair Display",serif;color:var(--olive);font-size:24px}
+    .month-nav{display:flex;gap:8px}
+    .month-nav button{margin:0;min-width:42px;min-height:42px;padding:8px 12px}
+    .calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px}
+    .calendar-weekday{text-align:center;color:var(--muted);font-size:11px;font-weight:600;padding:8px 0}
+    .calendar-day{min-height:54px;margin:0;padding:8px 4px;border:1px solid var(--line);background:#fffdf7;color:var(--ink);font:inherit;font-size:14px}
+    .calendar-day:hover:not(:disabled),.calendar-day.selected{background:var(--olive);border-color:var(--olive);color:#fff}
+    .calendar-day:disabled{opacity:.3;cursor:not-allowed}
+    .calendar-day.today{border-color:var(--gold);font-weight:700}
+    .calendar-selected{margin-top:18px;color:var(--olive);font-size:14px;font-weight:600}
+    .availability button{cursor:pointer}
+    @media(max-width:520px){.calendar-grid{gap:4px}.calendar-day{min-height:43px;padding:5px 2px;font-size:12px}.month-title{font-size:20px}}
+    .availability-status{margin:20px 0 0;padding:15px 18px;background:#f2f0e5;border-left:3px solid var(--gold);font-size:14px}
+    .availability-list{margin:12px 0 0;padding-left:20px;color:var(--ink);font-size:14px}
+    .availability-note{font-size:12px;color:var(--muted);margin-top:16px}
+    .availability-loading{opacity:.7}
+    .slot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:16px}
+    .slot-button{border:1px solid var(--olive2);background:#fffdf7;color:var(--olive);padding:11px 8px;font:inherit;font-size:13px;cursor:pointer}
+    .slot-button:hover,.slot-button.selected{background:var(--olive);color:#fff}
+    .slot-button:disabled{border-color:var(--line);background:#f0eee6;color:#999;cursor:not-allowed;text-decoration:line-through}
+
+
+    .booking-open{margin-top:18px}
+    .booking-modal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(25,27,19,.58)}
+    .booking-modal.is-open{display:flex}
+    .booking-dialog{position:relative;width:min(560px,100%);max-height:min(88vh,760px);overflow:auto;background:var(--paper);border:1px solid var(--line);padding:26px;box-shadow:0 18px 70px rgba(0,0,0,.22)}
+    .booking-dialog h2{font-size:30px;margin:0 42px 8px 0}
+    .booking-close{position:absolute;right:16px;top:14px;width:38px;height:38px;border:1px solid var(--line);background:transparent;color:var(--olive);font-size:24px;cursor:pointer}
+    .booking-intro{font-size:13px;color:var(--muted);margin:0 0 18px}
+    .booking-dialog .availability{padding:0;margin:0;border:0;max-width:none;background:transparent}
+    .booking-fields label{display:block;color:var(--olive);font-size:12px;font-weight:600;letter-spacing:.06em;margin:14px 0 6px}
+    .booking-fields input:not([type=checkbox]),.booking-fields select,.booking-fields textarea{width:100%;min-height:44px;border:1px solid var(--line);background:#fffdf7;padding:10px 12px;color:var(--ink);font:inherit;border-radius:2px}
+    .booking-fields textarea{resize:vertical}
+    .booking-fields [hidden]{display:none!important}
+    .booking-selection{margin:18px 0;padding:12px;background:#ecebdd;color:var(--olive);font-weight:600;font-size:13px}
+    .booking-consent{display:flex!important;align-items:flex-start;gap:9px;font-weight:400!important;letter-spacing:0!important;line-height:1.5;margin:18px 0!important}
+    .booking-consent input{margin-top:4px;flex:0 0 auto}
+    #booking-submit{width:100%;margin-top:8px}
+    .booking-dialog .calendar-day{min-height:42px}
+    .booking-dialog .slot-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .booking-dialog .availability-status{max-height:230px;overflow:auto}
+    .booking-modal-open{overflow:hidden}
+    @media(max-width:520px){.booking-dialog{padding:20px 15px}.booking-dialog h2{font-size:25px}.booking-dialog .calendar-day{min-height:38px}.booking-dialog .slot-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
     @media(max-width:800px){.topbar{height:130px}.links{gap:14px;font-size:9px}.brand{font-size:20px}.brand img{width:330px;height:108px;flex:0 0 330px}.rental-grid{grid-template-columns:1fr;gap:42px}.photo-grid img{height:220px}.service-cards{grid-template-columns:1fr 1fr}.event-gallery,.room-gallery{grid-template-columns:1fr 1fr}.hero{min-height:620px}section{padding:75px 0}}
     @media(max-width:520px){.wrap{width:calc(100% - 24px)}.topbar{height:auto;min-height:104px}.nav{padding:6px 0;align-items:center;gap:10px}.links{gap:8px;letter-spacing:.04em}.brand{font-size:0;gap:0}.brand img{width:230px;height:82px;flex:0 0 230px}.hero{min-height:560px}.hero:after{inset:10px}.hero-content{padding:56px 18px}.hero p{font-size:15px}.photo-grid img{height:170px}.event-gallery,.room-gallery{grid-template-columns:1fr 1fr;gap:10px}.event-gallery img,.room-gallery img{height:180px}.service-cards{gap:10px}.service-card{padding:22px 12px}.service-card h3{font-size:17px}.footer-inner{flex-direction:column;text-align:center}}
   </style>
@@ -104,7 +153,7 @@
         <p>Ať už potřebujete prostor pro práci, setkání, oslavu nebo společný zážitek, můžete si ho vytvořit přesně podle sebe.</p>
         <p class="tags">Pronájem prostoru | občerstvení | jednodenní akce | semináře | workshopy | setkání | oslavy</p>
         <p><strong>Přijďte si vytvořit svůj vlastní den v Přítomnosti.</strong></p>
-        <a class="btn" href="#contact">Rezervovat prostor</a>
+        <a class="btn booking-open" href="#booking" data-open-booking>Rezervovat prostor</a>
       </div>
       <div class="photo-grid" aria-label="Fotografie prostor">
         <img src="assets/main-room-wide.jpeg" alt="Světlý prostor pro setkávání" loading="lazy">
@@ -168,6 +217,75 @@
       </div>
     </div>
   </section>
+
+  <div class="booking-modal" id="booking-modal" aria-hidden="true">
+    <div class="booking-dialog" role="dialog" aria-modal="true" aria-labelledby="booking-title">
+      <button class="booking-close" type="button" aria-label="Zavřít" data-close-booking>×</button>
+      <div class="section-label">Centrum Přítomnost · Rezervace</div>
+      <h2 id="booking-title">Požádejte o rezervaci.</h2>
+      <p class="booking-intro">Vyberte typ rezervace, termín a vyplňte kontaktní údaje. Odesláním vznikne nezávazná žádost, nikoli potvrzená rezervace.</p>
+      <form id="booking-form" class="availability" method="post" target="booking-submit-frame" action="https://script.google.com/macros/s/AKfycbyZVA4GPX-M_QwLySfFNQZsODTu1YhL7TiPZ7kZYgtTIcmLY-DDzGAearX2CPT7SfMO/exec">
+        <input type="hidden" name="responseToken" id="response-token">
+        <input type="hidden" name="date" id="booking-date">
+        <input type="hidden" name="startTime" id="booking-start">
+        <input type="hidden" name="endDate" id="booking-end-date">
+        <input type="hidden" name="endTime" id="booking-end">
+        <input type="hidden" name="duration" id="booking-duration">
+        <div class="booking-fields">
+          <label for="booking-category">Typ rezervace</label>
+          <select id="booking-category" name="category" required>
+            <option value="Pronájem prostoru">Pronájem prostoru</option>
+            <option value="Událost / workshop">Událost / workshop</option>
+            <option value="Masáž / individuální péče">Masáž / individuální péče</option>
+          </select>
+          <label for="booking-service">Služba</label>
+          <select id="booking-service" name="service" required>
+            <option value="Pronájem prostoru">Pronájem prostoru</option>
+            <option value="Ubytování / přenocování">Ubytování / přenocování</option>
+          </select>
+          <div id="overnight-options" hidden>
+            <label for="booking-nights">Počet nocí</label>
+            <select id="booking-nights" name="nights">
+              <option value="1">1 noc</option><option value="2">2 noci</option><option value="3">3 noci</option><option value="4">4 noci</option><option value="5">5 nocí</option><option value="6">6 nocí</option><option value="7">7 nocí</option><option value="14">14 nocí</option><option value="30">30 nocí</option>
+            </select>
+            <p class="availability-note">Check-in: 15:00 · Check-out: 12:00. Vybraný den je den příjezdu.</p>
+          </div>
+          <div id="duration-options">
+            <label for="booking-hours">Délka rezervace</label>
+            <select id="booking-hours" name="hours">
+              <option value="1">1 hodina</option><option value="2">2 hodiny</option><option value="3">3 hodiny</option><option value="4">4 hodiny</option><option value="5">5 hodin</option><option value="6">6 hodin</option><option value="8">8 hodin</option><option value="12">12 hodin</option>
+            </select>
+          </div>
+          <label>Vyberte datum</label>
+          <div class="month-head">
+            <button class="btn" id="previous-month" type="button" aria-label="Předchozí měsíc">‹</button>
+            <div class="month-title" id="calendar-month-title" aria-live="polite"></div>
+            <button class="btn" id="next-month" type="button" aria-label="Další měsíc">›</button>
+          </div>
+          <div class="calendar-grid" id="calendar-grid" aria-label="Měsíční kalendář"></div>
+          <div class="calendar-selected" id="calendar-selected-date">Vyberte den.</div>
+          <div id="availability-result" class="availability-status" role="status" aria-live="polite">Nejprve vyberte datum.</div>
+          <div id="customer-fields" hidden>
+            <div class="booking-selection" id="booking-selection"></div>
+            <label for="booking-name">Jméno a příjmení</label>
+            <input id="booking-name" name="name" autocomplete="name" required>
+            <label for="booking-email">E-mail</label>
+            <input id="booking-email" name="email" type="email" autocomplete="email" required>
+            <label for="booking-phone">Telefon</label>
+            <input id="booking-phone" name="phone" type="tel" autocomplete="tel" required>
+            <label for="booking-message">Zpráva (nepovinné)</label>
+            <textarea id="booking-message" name="message" rows="3"></textarea>
+            <label class="booking-consent"><input type="checkbox" id="booking-consent" required> Beru na vědomí, že jde o nezávaznou žádost a termín bude potvrzen až po schválení Centrem Přítomnost.</label>
+            <button class="btn" id="booking-submit" type="submit">Odeslat žádost o rezervaci</button>
+          </div>
+          <div id="booking-feedback" class="availability-status" role="status" aria-live="polite" hidden></div>
+        </div>
+      </form>
+      <iframe name="booking-submit-frame" id="booking-submit-frame" title="Odeslání rezervace" hidden></iframe>
+      <p class="availability-note">Volné časy se ověřují v Google kalendáři. Žádost není potvrzením rezervace ani platbou.</p>
+    </div>
+  </div>
+
   <section class="contact" id="contact">
     <div class="wrap">
       <div class="section-label" style="color:#d6c79c">Centrum Přítomnost</div>
@@ -181,5 +299,93 @@
 <footer>
   <div class="wrap footer-inner"><span>© 2026 Centrum Přítomnost</span><span>Designed by Alansm Solutions</span></div>
 </footer>
+
+<script>
+(() => {
+  const endpoint='https://script.google.com/macros/s/AKfycbyZVA4GPX-M_QwLySfFNQZsODTu1YhL7TiPZ7kZYgtTIcmLY-DDzGAearX2CPT7SfMO/exec';
+  const $=id=>document.getElementById(id);
+  const modal=$('booking-modal'),grid=$('calendar-grid'),title=$('calendar-month-title'),selectedLabel=$('calendar-selected-date'),result=$('availability-result');
+  const form=$('booking-form'),feedback=$('booking-feedback'),customerFields=$('customer-fields');
+  if(!modal||!grid||!form)return;
+  const today=new Date();today.setHours(0,0,0,0);
+  let shownMonth=new Date(today.getFullYear(),today.getMonth(),1),selectedDate='',selectedStart='',busyIntervals=[],requestToken=0,submitToken='';
+  const weekdays=['Po','Út','St','Čt','Pá','So','Ne'];
+  const dateKey=d=>[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
+  const parseLocal=(date,time)=>new Date(date+'T'+time+':00');
+  const category=$('booking-category'),service=$('booking-service'),nights=$('booking-nights'),hours=$('booking-hours');
+  function openBooking(e){if(e)e.preventDefault();modal.classList.add('is-open');modal.setAttribute('aria-hidden','false');document.body.classList.add('booking-modal-open');if(!selectedDate)selectDate(today);else checkAvailability(selectedDate);}
+  function closeBooking(){modal.classList.remove('is-open');modal.setAttribute('aria-hidden','true');document.body.classList.remove('booking-modal-open');}
+  document.querySelectorAll('[data-open-booking]').forEach(el=>el.addEventListener('click',openBooking));
+  modal.querySelectorAll('[data-close-booking]').forEach(el=>el.addEventListener('click',closeBooking));
+  modal.addEventListener('click',e=>{if(e.target===modal)closeBooking();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('is-open'))closeBooking();});
+  function syncServiceOptions(){
+    const isRental=category.value==='Pronájem prostoru';
+    $('overnight-options').hidden=!(isRental&&service.value==='Ubytování / přenocování');
+    $('duration-options').hidden=$('overnight-options').hidden===false;
+    if(!isRental){service.innerHTML='';const opt=document.createElement('option');opt.value=category.value==='Událost / workshop'?'Workshop / událost':'Masáž / individuální péče';opt.textContent=opt.value;service.appendChild(opt);}
+    else if(![...service.options].some(o=>o.value==='Ubytování / přenocování'))service.innerHTML='<option value="Pronájem prostoru">Pronájem prostoru</option><option value="Ubytování / přenocování">Ubytování / přenocování</option>';
+    resetSelection();
+  }
+  function resetSelection(){selectedStart='';customerFields.hidden=true;feedback.hidden=true;renderSlots();}
+  category.addEventListener('change',syncServiceOptions);
+  service.addEventListener('change',()=>{syncServiceOptions();});
+  hours.addEventListener('change',()=>{resetSelection();});
+  nights.addEventListener('change',()=>{resetSelection();});
+  function renderCalendar(){
+    title.textContent=new Intl.DateTimeFormat('cs-CZ',{month:'long',year:'numeric'}).format(shownMonth);grid.replaceChildren();
+    weekdays.forEach(day=>{const d=document.createElement('div');d.className='calendar-weekday';d.textContent=day;grid.appendChild(d);});
+    const offset=(new Date(shownMonth.getFullYear(),shownMonth.getMonth(),1).getDay()+6)%7,days=new Date(shownMonth.getFullYear(),shownMonth.getMonth()+1,0).getDate();
+    for(let i=0;i<offset;i++)grid.appendChild(document.createElement('div'));
+    for(let n=1;n<=days;n++){const date=new Date(shownMonth.getFullYear(),shownMonth.getMonth(),n),key=dateKey(date),b=document.createElement('button');b.type='button';b.className='calendar-day';b.textContent=String(n);b.disabled=date<today;b.setAttribute('aria-label',new Intl.DateTimeFormat('cs-CZ',{dateStyle:'full'}).format(date));if(key===dateKey(today))b.classList.add('today');if(key===selectedDate)b.classList.add('selected');b.setAttribute('aria-pressed',String(key===selectedDate));b.addEventListener('click',()=>selectDate(date));grid.appendChild(b);}
+    $('previous-month').disabled=shownMonth.getFullYear()===today.getFullYear()&&shownMonth.getMonth()===today.getMonth();
+  }
+  function selectDate(date){selectedDate=dateKey(date);$('booking-date').value=selectedDate;selectedLabel.textContent='Vybraný den: '+new Intl.DateTimeFormat('cs-CZ',{dateStyle:'full'}).format(date);selectedStart='';customerFields.hidden=true;renderCalendar();checkAvailability(selectedDate);}
+  function checkAvailability(date){
+    const token=++requestToken;result.textContent='Načítáme události z kalendáře…';result.classList.add('availability-loading');
+    const cb='__centrumAvailability_'+Date.now()+'_'+Math.floor(Math.random()*100000),s=document.createElement('script');let done=false;
+    const timeout=setTimeout(()=>finish('Kalendář neodpověděl. Zkuste to prosím znovu.'),18000);
+    function cleanup(){if(done)return;done=true;clearTimeout(timeout);s.remove();try{delete window[cb];}catch(_){window[cb]=undefined;}}
+    function finish(message){cleanup();if(token!==requestToken)return;result.classList.remove('availability-loading');result.textContent=message;const b=document.createElement('button');b.type='button';b.className='btn';b.textContent='Zkusit znovu';b.onclick=()=>checkAvailability(date);result.appendChild(b);}
+    window[cb]=data=>{cleanup();if(token!==requestToken)return;result.classList.remove('availability-loading');if(!data||data.ok!==true||!Array.isArray(data.busy)){finish(data&&data.error?data.error:'Nepodařilo se načíst dostupnost.');return;}busyIntervals=data.busy;renderSlots();};
+    s.onerror=()=>finish('Nepodařilo se spojit s rezervačním kalendářem.');const u=new URL(endpoint);u.searchParams.set('action','availability');u.searchParams.set('date',date);u.searchParams.set('callback',cb);u.searchParams.set('_',Date.now());s.src=u.toString();s.async=true;document.head.appendChild(s);
+  }
+  function selectedRange(startTime){
+    const overnight=category.value==='Pronájem prostoru'&&service.value==='Ubytování / přenocování';
+    const start=overnight?parseLocal(selectedDate,'15:00'):parseLocal(selectedDate,startTime);
+    const end=overnight?new Date(start.getTime()+Number(nights.value)*86400000-3*3600000):new Date(start.getTime()+Number(hours.value)*3600000);
+    return {start,end,duration:Math.round((end-start)/60000),startTime:overnight?'15:00':startTime,endDate:dateKey(end),endTime:overnight?'12:00':String(end.getHours()).padStart(2,'0')+':'+String(end.getMinutes()).padStart(2,'0'),overnight};
+  }
+  function renderSlots(){
+    if(!selectedDate)return;
+    result.replaceChildren();const heading=document.createElement('div');heading.textContent='Vyberte volný '+(category.value==='Pronájem prostoru'&&service.value==='Ubytování / přenocování'?'termín příjezdu':'začátek');result.appendChild(heading);
+    const slots=document.createElement('div');slots.className='slot-grid';const overnight=category.value==='Pronájem prostoru'&&service.value==='Ubytování / přenocování';
+    for(let h=0;h<24;h++){if(overnight&&h!==15)continue;const time=String(h).padStart(2,'0')+':00',range=selectedRange(time),overlap=busyIntervals.some(ev=>{const a=parseLocal(ev.start.slice(0,10),ev.start.slice(11,16)),b=parseLocal(ev.end.slice(0,10),ev.end.slice(11,16));return range.start<b&&range.end>a;});
+      const btn=document.createElement('button');btn.type='button';btn.className='slot-button';btn.textContent=overnight?'Příjezd 15:00':time;btn.disabled=overlap||range.end<=new Date();btn.addEventListener('click',()=>chooseSlot(time));slots.appendChild(btn);}
+    result.appendChild(slots);
+    const note=document.createElement('p');note.className='availability-note';note.textContent=overnight?'Ubytování: příjezd v 15:00, odjezd v 12:00. Dostupnost se kontroluje po celou dobu pobytu.':'Volné začátky jsou v hodinových krocích. Délku zvolte výše.';result.appendChild(note);
+  }
+  function chooseSlot(time){
+    selectedStart=time;const r=selectedRange(time);if(busyIntervals.some(ev=>{const a=parseLocal(ev.start.slice(0,10),ev.start.slice(11,16)),b=parseLocal(ev.end.slice(0,10),ev.end.slice(11,16));return r.start<b&&r.end>a;})){result.textContent='Tento termín již není dostupný. Vyberte prosím jiný.';customerFields.hidden=true;return;}
+    $('booking-date').value=selectedDate;$('booking-start').value=r.startTime;$('booking-end-date').value=r.endDate;$('booking-end').value=r.endTime;$('booking-duration').value=String(r.duration);
+    const desc=r.overnight?selectedDate+' 15:00 – '+r.endDate+' 12:00 ('+nights.value+' nocí)':selectedDate+' '+r.startTime+' – '+r.endTime;
+    $('booking-selection').textContent='Vybraný termín: '+desc;customerFields.hidden=false;feedback.hidden=true;
+    result.querySelectorAll('.slot-button').forEach(b=>b.classList.toggle('selected',b.textContent===(r.overnight?'Příjezd 15:00':time)));
+  }
+  $('previous-month').addEventListener('click',()=>{shownMonth=new Date(shownMonth.getFullYear(),shownMonth.getMonth()-1,1);renderCalendar();});
+  $('next-month').addEventListener('click',()=>{shownMonth=new Date(shownMonth.getFullYear(),shownMonth.getMonth()+1,1);renderCalendar();});
+  let awaitingResponse=false;
+  window.addEventListener('message',event=>{if(event.origin!=='https://script.google.com'&&event.origin!=='https://script.googleusercontent.com')return;const d=event.data;if(!d||d.type!=='centrum-booking-result'||d.token!==submitToken)return;awaitingResponse=false;$('booking-submit').disabled=false;feedback.hidden=false;feedback.textContent=d.ok?'Děkujeme! Vaše žádost byla odeslána. Termín je předběžně blokován a čeká na potvrzení Centrem Přítomnost.':'Žádost se nepodařilo odeslat: '+(d.error||'Neznámá chyba');if(d.ok){form.reset();customerFields.hidden=true;selectedStart='';checkAvailability(selectedDate);}});
+  form.addEventListener('submit',e=>{
+    if(!selectedDate||!selectedStart){e.preventDefault();feedback.hidden=false;feedback.textContent='Nejprve vyberte datum a čas.';return;}
+    if(awaitingResponse){e.preventDefault();return;}
+    submitToken=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():String(Date.now())+'-'+Math.random().toString(36).slice(2);
+    $('response-token').value=submitToken;awaitingResponse=true;$('booking-submit').disabled=true;feedback.hidden=false;feedback.textContent='Odesíláme žádost…';
+    setTimeout(()=>{if(awaitingResponse){awaitingResponse=false;$('booking-submit').disabled=false;feedback.textContent='Nepodařilo se ověřit odpověď serveru. Před opakováním zkontrolujte, zda žádost nepřišla do e-mailu nebo tabulky.';}},25000);
+  });
+  syncServiceOptions();renderCalendar();
+})();
+</script>
+
 </body>
 </html>
