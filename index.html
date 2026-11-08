@@ -260,6 +260,7 @@
     modal.classList.add('is-open');
     modal.setAttribute('aria-hidden','false');
     document.body.classList.add('booking-modal-open');
+    if(selectedDate) checkAvailability(selectedDate); else selectDate(today);
   }
   function closeBooking(){
     modal.classList.remove('is-open');
@@ -335,7 +336,11 @@
     function finishError(message){
       cleanup();
       if(token!==requestToken)return;
-      result.textContent=message;result.classList.remove('availability-loading');
+      result.textContent='';
+      const error=document.createElement('p');error.textContent=message;result.appendChild(error);
+      const retry=document.createElement('button');retry.type='button';retry.className='btn';retry.textContent='Zkusit znovu';
+      retry.addEventListener('click',()=>checkAvailability(date));result.appendChild(retry);
+      result.classList.remove('availability-loading');
     }
     window[callbackName]=(data)=>{
       cleanup();
