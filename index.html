@@ -109,6 +109,19 @@
     .booking-dialog .calendar-day{min-height:42px}
     .booking-dialog .slot-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
     .booking-dialog .availability-status{max-height:230px;overflow:auto}
+    .professional-choice{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+    .professional-bio-trigger{min-height:44px;padding:10px 14px;white-space:nowrap}
+    .bio-dialog{width:min(720px,100%)}
+    .bio-header{display:grid;grid-template-columns:180px 1fr;gap:24px;align-items:center;margin:10px 34px 22px 0}
+    .bio-header img{width:180px;height:220px;object-fit:cover;border-radius:2px}
+    .bio-header h2{font-size:30px;margin:0 0 10px}
+    .bio-header p{font-size:13px;line-height:1.7;color:var(--muted)}
+    .bio-header a{text-decoration:underline;text-underline-offset:3px}
+    .bio-copy{font-size:14px;color:#666457}
+    .bio-copy h3{color:var(--olive);margin:24px 0 10px}
+    .bio-copy ul{padding-left:20px}
+    .bio-copy li{margin:0 0 14px}
+    .bio-copy li span{color:var(--muted)}
     .booking-modal-open{overflow:hidden}
     @media(max-width:520px){.booking-dialog{padding:20px 15px}.booking-dialog h2{font-size:25px}.booking-dialog .calendar-day{min-height:38px}.booking-dialog .slot-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 
@@ -264,6 +277,15 @@
           </div>
           <div class="calendar-grid" id="calendar-grid" aria-label="Měsíční kalendář"></div>
           <div class="calendar-selected" id="calendar-selected-date">Vyberte den.</div>
+          <div id="professional-picker" hidden>
+            <label for="booking-professional">Vyberte si odbornici</label>
+            <div class="professional-choice">
+              <select id="booking-professional" name="professional" required>
+                <option value="Zuzana Pithardová, DiS.">Zuzana Pithardová, DiS.</option>
+              </select>
+              <button class="btn professional-bio-trigger" type="button" id="open-zuzka-bio">Profil odbornice</button>
+            </div>
+          </div>
           <div id="availability-result" class="availability-status" role="status" aria-live="polite">Nejprve vyberte datum.</div>
           <div id="customer-fields" hidden>
             <div class="booking-selection" id="booking-selection"></div>
@@ -286,6 +308,26 @@
     </div>
   </div>
 
+  <div class="booking-modal" id="zuzka-bio-modal" aria-hidden="true">
+    <div class="booking-dialog bio-dialog" role="dialog" aria-modal="true" aria-labelledby="zuzka-bio-title">
+      <button class="booking-close" type="button" aria-label="Zavřít" data-close-bio>×</button>
+      <div class="bio-header">
+        <img src="assets/zuzana-pithardova.jpg" alt="Zuzana Pithardová, DiS." loading="lazy">
+        <div><div class="section-label">Individuální péče · Centrum Přítomnost</div><h2 id="zuzka-bio-title">Zuzana Pithardová, DiS.</h2><p><a href="tel:+420775904465">775 904 465</a><br><a href="https://zuzkapithardova.cz/" target="_blank" rel="noopener">zuzkapithardova.cz</a></p></div>
+      </div>
+      <div class="bio-copy">
+        <p>Zuzka works with women's bodies that have been overworked for a long time and need to slow down, calm down, and lean back on themselves again. This is not a classic massage where something is “fixed.” She creates a space where the body can loosen up and return to balance.</p>
+        <p>She connects conscious touch, breath and body perception. During a massage, she starts something in the body and it then works on its own, even for a few days after the meeting. For her, safety, respect and trust are the basis. She is continuously educating herself in working with the body, the nervous system and psychosomatics.</p>
+        <p>She is mainly visited by women. She accepts men if they know why they are coming and really want to work on their bodies.</p>
+        <h3>Price list</h3>
+        <ul>
+          <li><strong>Energy / tantra massage, conscious touch</strong><br>90 min — 2,300 CZK · 120 min — 2,900 CZK<br><span>+ 30 min consultation</span></li>
+          <li><strong>Quick-recharge massage</strong><br>60 min — 1,600 CZK <span>(+ 20 min consultation)</span></li>
+          <li><strong>Body mapping &amp; bodywork</strong><br>120 min — 2,500 CZK <span>(+ 20 min consultation)</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
   <section class="contact" id="contact">
     <div class="wrap">
       <div class="section-label" style="color:#d6c79c">Centrum Přítomnost</div>
@@ -305,6 +347,13 @@
   const $=id=>document.getElementById(id);
   const modal=$('booking-modal'),grid=$('calendar-grid'),title=$('calendar-month-title'),selectedLabel=$('calendar-selected-date'),result=$('availability-result');
   const form=$('booking-form'),feedback=$('booking-feedback'),customerFields=$('customer-fields');
+  const professionalPicker=$('professional-picker'),professionalSelect=$('booking-professional');
+  const bioModal=$('zuzka-bio-modal');
+  function openBio(){bioModal.classList.add('is-open');bioModal.setAttribute('aria-hidden','false');}
+  function closeBio(){bioModal.classList.remove('is-open');bioModal.setAttribute('aria-hidden','true');}
+  $('open-zuzka-bio').addEventListener('click',openBio);
+  bioModal.querySelectorAll('[data-close-bio]').forEach(el=>el.addEventListener('click',closeBio));
+  bioModal.addEventListener('click',e=>{if(e.target===bioModal)closeBio();});
   if(!modal||!grid||!form)return;
   const today=new Date();today.setHours(0,0,0,0);
   let shownMonth=new Date(today.getFullYear(),today.getMonth(),1),selectedDate='',selectedStart='',busyIntervals=[],requestToken=0,submitToken='';
@@ -326,8 +375,8 @@
     else if(![...service.options].some(o=>o.value==='Ubytování / přenocování'))service.innerHTML='<option value="Pronájem prostoru">Pronájem prostoru</option><option value="Ubytování / přenocování">Ubytování / přenocování</option>';
     resetSelection();
   }
-  function resetSelection(){selectedStart='';customerFields.hidden=true;feedback.hidden=true;renderSlots();}
-  category.addEventListener('change',syncServiceOptions);
+  function resetSelection(){selectedStart='';customerFields.hidden=true;feedback.hidden=true;if(professionalPicker)professionalPicker.hidden=category.value!=='Masáž / individuální péče'||!selectedDate;renderSlots();}
+  category.addEventListener('change',()=>{syncServiceOptions();professionalPicker.hidden=category.value!=='Masáž / individuální péče'||!selectedDate;});
   service.addEventListener('change',()=>{syncServiceOptions();});
   hours.addEventListener('change',()=>{resetSelection();});
   nights.addEventListener('change',()=>{resetSelection();});
@@ -339,7 +388,7 @@
     for(let n=1;n<=days;n++){const date=new Date(shownMonth.getFullYear(),shownMonth.getMonth(),n),key=dateKey(date),b=document.createElement('button');b.type='button';b.className='calendar-day';b.textContent=String(n);b.disabled=date<today;b.setAttribute('aria-label',new Intl.DateTimeFormat('cs-CZ',{dateStyle:'full'}).format(date));if(key===dateKey(today))b.classList.add('today');if(key===selectedDate)b.classList.add('selected');b.setAttribute('aria-pressed',String(key===selectedDate));b.addEventListener('click',()=>selectDate(date));grid.appendChild(b);}
     $('previous-month').disabled=shownMonth.getFullYear()===today.getFullYear()&&shownMonth.getMonth()===today.getMonth();
   }
-  function selectDate(date){selectedDate=dateKey(date);$('booking-date').value=selectedDate;selectedLabel.textContent='Vybraný den: '+new Intl.DateTimeFormat('cs-CZ',{dateStyle:'full'}).format(date);selectedStart='';customerFields.hidden=true;renderCalendar();checkAvailability(selectedDate);}
+  function selectDate(date){selectedDate=dateKey(date);$('booking-date').value=selectedDate;selectedLabel.textContent='Vybraný den: '+new Intl.DateTimeFormat('cs-CZ',{dateStyle:'full'}).format(date);selectedStart='';customerFields.hidden=true;professionalPicker.hidden=category.value!=='Masáž / individuální péče';renderCalendar();checkAvailability(selectedDate);}
   function checkAvailability(date){
     const token=++requestToken;result.textContent='Načítáme události z kalendáře…';result.classList.add('availability-loading');
     const cb='__centrumAvailability_'+Date.now()+'_'+Math.floor(Math.random()*100000),s=document.createElement('script');let done=false;
