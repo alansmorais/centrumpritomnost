@@ -145,7 +145,7 @@ function createRequest_(data){
     }catch(sheetError){calendar.deleteEvent(event.getId());throw new Error('Could not save the request in the spreadsheet. '+sheetError.message);}
     const formatted=Utilities.formatDate(start,CONFIG.TIME_ZONE,'dd.MM.yyyy HH:mm')+' – '+Utilities.formatDate(end,CONFIG.TIME_ZONE,'dd.MM.yyyy HH:mm');
     try{
-      MailApp.sendEmail({to:CONFIG.ADMIN_EMAIL,subject:'New booking request — Centrum Přítomnost',body:'A new booking request is waiting for manual approval.\n\nCategory: '+data.category+'\nService: '+data.service+'\nDate and time: '+formatted+'\nDuration: '+duration+' minutes\nCustomer: '+name+'\nEmail: '+email+'\nPhone: '+phone+'\nMessage: '+message+'\n\nThe calendar slot is temporarily blocked as PENDING.'});
+      MailApp.sendEmail({to:CONFIG.ADMIN_EMAIL,subject:'New booking request — Centrum Přítomnost',body:'A new booking request is waiting for manual approval.\n\nCategory: '+data.category+'\nService: '+data.service+'\nProfessional: '+professional+'\nDate and time: '+formatted+'\nDuration: '+duration+' minutes\nCustomer: '+name+'\nEmail: '+email+'\nPhone: '+phone+'\nMessage: '+message+'\n\nThe calendar slot is temporarily blocked as PENDING.'});
       MailApp.sendEmail({to:email,subject:'We received your request — Centrum Přítomnost',body:'Hello '+name+',\n\nWe received your request for '+data.service+(professional?' with '+professional:'')+' ('+formatted+'). This is not a confirmed reservation. We will contact you after reviewing it.\n\nCentrum Přítomnost'});
     }catch(mailError){console.error('Request saved, but notification email failed: '+mailError.message);}
     return {ok:true,requestId:id,status:'PENDING'};
