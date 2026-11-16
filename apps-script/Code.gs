@@ -55,6 +55,7 @@ function ensureRequestHeaders_(sheet){
 function doGet(e){
   try{
     if(getParam_(e,'action')==='availability')return availabilityOutput_(e,getAvailability_(getParam_(e,'date'),getParam_(e,'professional')));
+    if(getParam_(e,'action')==='professionals')return availabilityOutput_(e,{ok:true,professionals:getProfessionals_(SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID)).map(p=>({name:p.name}))});
     return jsonOutput_({ok:true,service:'Centrum Přítomnost booking backend',status:'ready'});
   }catch(err){
     const value={ok:false,error:err.message||'Unable to process request.'};
