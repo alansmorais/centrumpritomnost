@@ -14,7 +14,7 @@ const CONFIG = {
 const REQUEST_HEADERS = [
   'Request ID','Created At','Status','Category','Service','Date','Start Time',
   'Duration (minutes)','Customer Name','Customer Email','Customer Phone',
-  'Message','Calendar Event ID','End Date','End Time','Nights','Professional'
+  'Message','Calendar Event ID','End Date','End Time','Nights','Professional','Professional'
 ];
 
 function setupCentrum() {
@@ -132,6 +132,8 @@ function createRequest_(data){
     if(!sheet)throw new Error('Requests sheet is missing. Contact the administrator.');
     ensureRequestHeaders_(sheet);
     const id=Utilities.getUuid(),name=String(data.name).trim(),phone=String(data.phone).trim(),message=String(data.message||'').trim();
+    const professional=String(data.professional||'').trim();
+    if(data.category==='Masáž / individuální péče'&&!professional)throw new Error('Please select a professional.');
     const title=CONFIG.HOLD_PREFIX+data.category+' — '+data.service+(professional?' — '+professional:'')+' — '+name;
     const description=[
       'Status: PENDING — manual approval required','Request ID: '+id,
