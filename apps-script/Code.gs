@@ -14,7 +14,7 @@ const CONFIG = {
 const REQUEST_HEADERS = [
   'Request ID','Created At','Status','Category','Service','Date','Start Time',
   'Duration (minutes)','Customer Name','Customer Email','Customer Phone',
-  'Message','Calendar Event ID','End Date','End Time','Nights'
+  'Message','Calendar Event ID','End Date','End Time','Nights','Professional'
 ];
 
 function setupCentrum() {
@@ -108,6 +108,8 @@ function createRequest_(data){
   if(!/^([01]\d|2[0-3]):[0-5]\d$/.test(data.startTime))throw new Error('Invalid start time.');
   const duration=Number(data.duration);
   if(!Number.isInteger(duration)||duration<30||duration>43200)throw new Error('Invalid reservation duration.');
+  const professional=String(data.professional||'').trim();
+  if(data.category==='Masáž / individuální péče'&&professional!=='Zuzana Pithardová, DiS.')throw new Error('Please select a professional for your treatment.');
   const email=String(data.email).trim();
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))throw new Error('Invalid email address.');
   const start=localDateTime_(data.date,data.startTime);
@@ -130,21 +132,21 @@ function createRequest_(data){
     if(!sheet)throw new Error('Requests sheet is missing. Contact the administrator.');
     ensureRequestHeaders_(sheet);
     const id=Utilities.getUuid(),name=String(data.name).trim(),phone=String(data.phone).trim(),message=String(data.message||'').trim();
-    const title=CONFIG.HOLD_PREFIX+data.category+' — '+data.service+' — '+name;
+    const title=CONFIG.HOLD_PREFIX+data.category+' — '+data.service+(professional?' — '+professional:'')+' — '+name;
     const description=[
       'Status: PENDING — manual approval required','Request ID: '+id,
-      'Category: '+data.category,'Service: '+data.service,'Customer: '+name,
+      'Category: '+data.category,'Service: '+data.service,'Professional: '+professional,'Customer: '+name,
       'Email: '+email,'Phone: '+phone,'Message: '+message,
       'End: '+Utilities.formatDate(end,CONFIG.TIME_ZONE,'dd.MM.yyyy HH:mm')
     ].join('\n');
     const event=calendar.createEvent(title,start,end,{description:description});
     try{
-      sheet.appendRow([id,new Date(),'PENDING',data.category,data.service,data.date,data.startTime,duration,name,email,phone,message,event.getId(),data.endDate||Utilities.formatDate(end,CONFIG.TIME_ZONE,'yyyy-MM-dd'),data.endTime||Utilities.formatDate(end,CONFIG.TIME_ZONE,'HH:mm'),nights]);
+      sheet.appendRow([id,new Date(),'PENDING',data.category,data.service,data.date,data.startTime,duration,name,email,phone,message,event.getId(),data.endDate||Utilities.formatDate(end,CONFIG.TIME_ZONE,'yyyy-MM-dd'),data.endTime||Utilities.formatDate(end,CONFIG.TIME_ZONE,'HH:mm'),nights,professional]);
     }catch(sheetError){calendar.deleteEvent(event.getId());throw new Error('Could not save the request in the spreadsheet. '+sheetError.message);}
     const formatted=Utilities.formatDate(start,CONFIG.TIME_ZONE,'dd.MM.yyyy HH:mm')+' – '+Utilities.formatDate(end,CONFIG.TIME_ZONE,'dd.MM.yyyy HH:mm');
     try{
       MailApp.sendEmail({to:CONFIG.ADMIN_EMAIL,subject:'New booking request — Centrum Přítomnost',body:'A new booking request is waiting for manual approval.\n\nCategory: '+data.category+'\nService: '+data.service+'\nDate and time: '+formatted+'\nDuration: '+duration+' minutes\nCustomer: '+name+'\nEmail: '+email+'\nPhone: '+phone+'\nMessage: '+message+'\n\nThe calendar slot is temporarily blocked as PENDING.'});
-      MailApp.sendEmail({to:email,subject:'We received your request — Centrum Přítomnost',body:'Hello '+name+',\n\nWe received your request for '+data.service+' ('+formatted+'). This is not a confirmed reservation. We will contact you after reviewing it.\n\nCentrum Přítomnost'});
+      MailApp.sendEmail({to:email,subject:'We received your request — Centrum Přítomnost',body:'Hello '+name+',\n\nWe received your request for '+data.service+(professional?' with '+professional:'')+' ('+formatted+'). This is not a confirmed reservation. We will contact you after reviewing it.\n\nCentrum Přítomnost'});
     }catch(mailError){console.error('Request saved, but notification email failed: '+mailError.message);}
     return {ok:true,requestId:id,status:'PENDING'};
   }finally{lock.releaseLock();}
