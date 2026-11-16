@@ -387,7 +387,7 @@
     const isRental=category.value==='Pronájem prostoru';
     const isMassage=category.value==='Masáž / individuální péče';
     $('overnight-options').hidden=!(isRental&&service.value==='Ubytování / přenocování');
-    $('duration-options').hidden=!isRental||$('overnight-options').hidden===false;
+    $('duration-options').hidden=isMassage||$('overnight-options').hidden===false;
     if(isMassage){
       service.innerHTML='';
       [['Energetická / tantra masáž — 90 min + 30 min konzultace · 2 300 Kč','120'],['Energetická / tantra masáž — 120 min + 30 min konzultace · 2 900 Kč','150'],['Rychlodobíjecí masáž — 60 min + 20 min konzultace · 1 600 Kč','80'],['Mapování těla & bodywork — 120 min + 20 min konzultace · 2 500 Kč','140']].forEach((item,i)=>{const opt=document.createElement('option');opt.value=['Energetická / tantra masáž (90 min + 30 min konzultace)','Energetická / tantra masáž (120 min + 30 min konzultace)','Rychlodobíjecí masáž (60 min + 20 min konzultace)','Mapování těla & bodywork (120 min + 20 min konzultace)'][i];opt.textContent=item[0];opt.dataset.duration=item[1];service.appendChild(opt);});
@@ -399,7 +399,7 @@
   function resetSelection(){selectedStart='';customerFields.hidden=true;feedback.hidden=true;if(professionalPicker)professionalPicker.hidden=category.value!=='Masáž / individuální péče'||!selectedDate;renderSlots();}
   category.addEventListener('change',()=>{syncServiceOptions();professionalPicker.hidden=category.value!=='Masáž / individuální péče'||!selectedDate;if(selectedDate)checkAvailability(selectedDate);});
   professionalSelect.addEventListener('change',()=>{$('open-zuzka-bio').hidden=professionalSelect.value!=='Zuzana Pithardová, DiS.';selectedStart='';customerFields.hidden=true;if(selectedDate)checkAvailability(selectedDate);});
-  service.addEventListener('change',()=>{syncServiceOptions();});
+  service.addEventListener('change',()=>{$('overnight-options').hidden=!(category.value==='Pronájem prostoru'&&service.value==='Ubytování / přenocování');$('duration-options').hidden=category.value==='Masáž / individuální péče'||$('overnight-options').hidden===false;resetSelection();});
   hours.addEventListener('change',()=>{resetSelection();});
   nights.addEventListener('change',()=>{resetSelection();});
   function renderCalendar(){
