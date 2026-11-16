@@ -366,7 +366,8 @@
   function openBio(){bioModal.classList.add('is-open');bioModal.setAttribute('aria-hidden','false');}
   function closeBio(){bioModal.classList.remove('is-open');bioModal.setAttribute('aria-hidden','true');}
   $('open-zuzka-bio').addEventListener('click',openBio);
-  function loadProfessionals(){const cb='__centrumProfessionals_'+Date.now(),sc=document.createElement('script');window[cb]=data=>{try{if(data&&data.ok&&Array.isArray(data.professionals)){const current=professionalSelect.value;professionalSelect.replaceChildren();data.professionals.forEach(p=>{const o=document.createElement('option');o.value=p.name;o.textContent=p.name;professionalSelect.appendChild(o);});if([...professionalSelect.options].some(o=>o.value===current))professionalSelect.value=current;}}finally{sc.remove();delete window[cb];}};sc.onerror=()=>{sc.remove();delete window[cb];};const u=new URL(endpoint);u.searchParams.set('action','professionals');u.searchParams.set('callback',cb);sc.src=u.toString();document.head.appendChild(sc);}
+  $('open-zuzka-bio').hidden=professionalSelect.value!=='Zuzana Pithardová, DiS.';
+  function loadProfessionals(){const cb='__centrumProfessionals_'+Date.now(),sc=document.createElement('script');window[cb]=data=>{try{if(data&&data.ok&&Array.isArray(data.professionals)){const current=professionalSelect.value;professionalSelect.replaceChildren();data.professionals.forEach(p=>{const o=document.createElement('option');o.value=p.name;o.textContent=p.name;professionalSelect.appendChild(o);});if([...professionalSelect.options].some(o=>o.value===current))professionalSelect.value=current;$('open-zuzka-bio').hidden=professionalSelect.value!=='Zuzana Pithardová, DiS.';}}finally{sc.remove();delete window[cb];}};sc.onerror=()=>{sc.remove();delete window[cb];};const u=new URL(endpoint);u.searchParams.set('action','professionals');u.searchParams.set('callback',cb);sc.src=u.toString();document.head.appendChild(sc);}
   bioModal.querySelectorAll('[data-close-bio]').forEach(el=>el.addEventListener('click',closeBio));
   bioModal.addEventListener('click',e=>{if(e.target===bioModal)closeBio();});
   if(!modal||!grid||!form)return;
@@ -397,7 +398,7 @@
   }
   function resetSelection(){selectedStart='';customerFields.hidden=true;feedback.hidden=true;if(professionalPicker)professionalPicker.hidden=category.value!=='Masáž / individuální péče'||!selectedDate;renderSlots();}
   category.addEventListener('change',()=>{syncServiceOptions();professionalPicker.hidden=category.value!=='Masáž / individuální péče'||!selectedDate;if(selectedDate)checkAvailability(selectedDate);});
-  professionalSelect.addEventListener('change',()=>{selectedStart='';customerFields.hidden=true;if(selectedDate)checkAvailability(selectedDate);});
+  professionalSelect.addEventListener('change',()=>{$('open-zuzka-bio').hidden=professionalSelect.value!=='Zuzana Pithardová, DiS.';selectedStart='';customerFields.hidden=true;if(selectedDate)checkAvailability(selectedDate);});
   service.addEventListener('change',()=>{syncServiceOptions();});
   hours.addEventListener('change',()=>{resetSelection();});
   nights.addEventListener('change',()=>{resetSelection();});
