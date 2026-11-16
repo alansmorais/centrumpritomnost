@@ -196,7 +196,7 @@ function getAvailability_(dateString,professionalName){
   const requests=ss.getSheetByName(CONFIG.REQUEST_SHEET),requestStatus={};
   if(requests&&requests.getLastRow()>1)requests.getRange(2,1,requests.getLastRow()-1,REQUEST_HEADERS.length).getValues().forEach(r=>{if(r[0])requestStatus[String(r[0])]=String(r[2]||'PENDING').toUpperCase();});
   let busy=calendar.getEvents(start,new Date(end.getTime()+60000)).filter(ev=>{
-    const match=String(ev.getDescription()||'').match(/Request ID:\\s*([0-9a-f-]+)/i);
+    const match=String(ev.getDescription()||'').match(/Request ID:\s*([0-9a-f-]+)/i);
     if(!match)return true;
     const status=requestStatus[match[1]];
     return status!=='REJECTED'&&status!=='CANCELLED';
