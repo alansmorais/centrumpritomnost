@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Preview deployment: isolated Cloudflare Pages project; production site remains unchanged. -->
 <html lang="cs">
 <head>
   <meta charset="UTF-8">
@@ -63,6 +64,81 @@
     .contact h2{color:#fffdf5}.contact p{max-width:650px;margin:0 auto 26px;color:#e8e5d8}
     footer{padding:30px 0;color:var(--muted);font-size:11px;letter-spacing:.06em}
     .footer-inner{display:flex;align-items:center;justify-content:space-between;gap:20px}
+
+    .availability{background:var(--paper);border:1px solid var(--line);padding:clamp(24px,4vw,42px);max-width:850px;margin:42px auto 0;text-align:left}
+    .availability label{display:block;color:var(--olive);font-size:12px;font-weight:600;letter-spacing:.08em;margin-bottom:9px}
+    .month-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
+    .month-title{font-family:"Playfair Display",serif;color:var(--olive);font-size:24px}
+    .month-nav{display:flex;gap:8px}
+    .month-nav button{margin:0;min-width:42px;min-height:42px;padding:8px 12px}
+    .calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px}
+    .calendar-weekday{text-align:center;color:var(--muted);font-size:11px;font-weight:600;padding:8px 0}
+    .calendar-day{min-height:54px;margin:0;padding:8px 4px;border:1px solid var(--line);background:#fffdf7;color:var(--ink);font:inherit;font-size:14px}
+    .calendar-day:hover:not(:disabled),.calendar-day.selected{background:var(--olive);border-color:var(--olive);color:#fff}
+    .calendar-day:disabled{opacity:.3;cursor:not-allowed}
+    .calendar-day.today{border-color:var(--gold);font-weight:700}
+    .calendar-selected{margin-top:18px;color:var(--olive);font-size:14px;font-weight:600}
+    .availability button{cursor:pointer}
+    @media(max-width:520px){.calendar-grid{gap:4px}.calendar-day{min-height:43px;padding:5px 2px;font-size:12px}.month-title{font-size:20px}}
+    .availability-status{margin:20px 0 0;padding:15px 18px;background:#f2f0e5;border-left:3px solid var(--gold);font-size:14px}
+    .availability-list{margin:12px 0 0;padding-left:20px;color:var(--ink);font-size:14px}
+    .availability-note{font-size:12px;color:var(--muted);margin-top:16px}
+    .availability-loading{opacity:.7}
+    .slot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:16px}
+    .slot-button{border:1px solid var(--olive2);background:#fffdf7;color:var(--olive);padding:11px 8px;font:inherit;font-size:13px;cursor:pointer}
+    .slot-button:hover,.slot-button.selected{background:var(--olive);color:#fff}
+    .slot-button:disabled{border-color:var(--line);background:#f0eee6;color:#999;cursor:not-allowed;text-decoration:line-through}
+
+
+    .booking-open{margin-top:18px}
+    .booking-modal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(25,27,19,.58)}
+    .booking-modal.is-open{display:flex}
+    .booking-dialog{position:relative;width:min(560px,100%);max-height:min(88vh,760px);overflow:auto;background:var(--paper);border:1px solid var(--line);padding:26px;box-shadow:0 18px 70px rgba(0,0,0,.22)}
+    .booking-dialog h2{font-size:30px;margin:0 42px 8px 0}
+    .booking-close{position:absolute;right:16px;top:14px;width:38px;height:38px;border:1px solid var(--line);background:transparent;color:var(--olive);font-size:24px;cursor:pointer}
+    .booking-intro{font-size:13px;color:var(--muted);margin:0 0 18px}
+    .booking-dialog .availability{padding:0;margin:0;border:0;max-width:none;background:transparent}
+    .booking-fields label{display:block;color:var(--olive);font-size:12px;font-weight:600;letter-spacing:.06em;margin:14px 0 6px}
+    .booking-fields input:not([type=checkbox]),.booking-fields select,.booking-fields textarea{width:100%;min-height:44px;border:1px solid var(--line);background:#fffdf7;padding:10px 12px;color:var(--ink);font:inherit;border-radius:2px}
+    .booking-fields textarea{resize:vertical}
+    .booking-fields [hidden]{display:none!important}
+    .booking-selection{margin:18px 0;padding:12px;background:#ecebdd;color:var(--olive);font-weight:600;font-size:13px}
+    .booking-consent{display:flex!important;align-items:flex-start;gap:9px;font-weight:400!important;letter-spacing:0!important;line-height:1.5;margin:18px 0!important}
+    .booking-consent input{margin-top:4px;flex:0 0 auto}
+    #booking-submit{width:100%;margin-top:8px}
+    .booking-dialog .calendar-day{min-height:42px}
+    .booking-dialog .slot-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .booking-dialog .availability-status{max-height:230px;overflow:auto}
+    .professional-choice{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+    .professional-bio-trigger{min-height:44px;padding:10px 14px;white-space:nowrap}
+    .bio-dialog{width:min(720px,100%)}
+    .bio-header{display:grid;grid-template-columns:180px 1fr;gap:24px;align-items:center;margin:10px 34px 22px 0}
+    .bio-header img{width:180px;height:220px;object-fit:cover;border-radius:2px}
+    .bio-header h2{font-size:30px;margin:0 0 10px}
+    .bio-header p{font-size:13px;line-height:1.7;color:var(--muted)}
+    .bio-header a{text-decoration:underline;text-underline-offset:3px}
+    .bio-copy{font-size:14px;color:#666457}
+    .bio-copy h3{color:var(--olive);margin:24px 0 10px}
+    .bio-copy ul{padding-left:20px}
+    .bio-copy li{margin:0 0 14px}
+    .bio-copy li span{color:var(--muted)}
+    .professional-choice{display:grid;grid-template-columns:1fr auto;gap:9px;align-items:center}
+    .professional-choice .btn{margin:0;white-space:nowrap;min-height:44px;padding:10px 14px}
+    .bio-dialog{width:min(760px,100%)}
+    .bio-header{display:grid;grid-template-columns:190px 1fr;gap:24px;align-items:center;margin:12px 0 24px}
+    .bio-header img{width:190px;height:220px;object-fit:cover;object-position:center 25%;border-radius:2px}
+    .bio-header h2{font-size:30px;margin:8px 0}
+    .bio-header p{font-size:14px;line-height:1.8;margin:0}
+    .bio-header a{color:var(--olive);text-decoration:underline;text-underline-offset:3px}
+    .bio-copy p{color:#666457;margin:0 0 14px}
+    .bio-copy h3{color:var(--olive);margin:24px 0 12px}
+    .bio-copy ul{padding-left:22px}
+    .bio-copy li{padding:0 0 14px 4px;color:var(--ink)}
+    .bio-copy li span{color:var(--muted)}
+    @media(max-width:560px){.professional-choice{grid-template-columns:1fr}.bio-header{grid-template-columns:1fr;gap:14px}.bio-header img{width:100%;height:260px}.bio-header h2{font-size:25px}}
+    .booking-modal-open{overflow:hidden}
+    @media(max-width:520px){.booking-dialog{padding:20px 15px}.booking-dialog h2{font-size:25px}.booking-dialog .calendar-day{min-height:38px}.booking-dialog .slot-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
     @media(max-width:800px){.topbar{height:130px}.links{gap:14px;font-size:9px}.brand{font-size:20px}.brand img{width:330px;height:108px;flex:0 0 330px}.rental-grid{grid-template-columns:1fr;gap:42px}.photo-grid img{height:220px}.service-cards{grid-template-columns:1fr 1fr}.event-gallery,.room-gallery{grid-template-columns:1fr 1fr}.hero{min-height:620px}section{padding:75px 0}}
     @media(max-width:520px){.wrap{width:calc(100% - 24px)}.topbar{height:auto;min-height:104px}.nav{padding:6px 0;align-items:center;gap:10px}.links{gap:8px;letter-spacing:.04em}.brand{font-size:0;gap:0}.brand img{width:230px;height:82px;flex:0 0 230px}.hero{min-height:560px}.hero:after{inset:10px}.hero-content{padding:56px 18px}.hero p{font-size:15px}.photo-grid img{height:170px}.event-gallery,.room-gallery{grid-template-columns:1fr 1fr;gap:10px}.event-gallery img,.room-gallery img{height:180px}.service-cards{gap:10px}.service-card{padding:22px 12px}.service-card h3{font-size:17px}.footer-inner{flex-direction:column;text-align:center}}
   </style>
@@ -104,7 +180,7 @@
         <p>Ať už potřebujete prostor pro práci, setkání, oslavu nebo společný zážitek, můžete si ho vytvořit přesně podle sebe.</p>
         <p class="tags">Pronájem prostoru | občerstvení | jednodenní akce | semináře | workshopy | setkání | oslavy</p>
         <p><strong>Přijďte si vytvořit svůj vlastní den v Přítomnosti.</strong></p>
-        <a class="btn" href="#contact">Rezervovat prostor</a>
+        <a class="btn booking-open" href="#booking" data-open-booking>Rezervovat prostor</a>
       </div>
       <div class="photo-grid" aria-label="Fotografie prostor">
         <img src="assets/main-room-wide.jpeg" alt="Světlý prostor pro setkávání" loading="lazy">
@@ -136,7 +212,7 @@
       <div class="quote">Možná se něco nového naučíte.<br>Možná něco pustíte.<br>Možná někoho potkáte.<br>A možná si jen na chvíli dovolíte být.</div>
       <p class="tags">Aktuální program | workshopy | semináře | kurzy | ženské kruhy | speciální eventy</p>
       <p><strong>Tohle je místo pro setkávání. Přijďte se setkat.</strong></p>
-      <a class="btn" href="#contact">Prohlédnout program</a>
+      <a class="btn" href="#booking" data-open-booking>Požádat o rezervaci akce</a>
     </div>
   </section>
   <section id="treatments">
@@ -159,7 +235,7 @@
         <p>Prohlédněte si jednotlivé služby a naše průvodce a rezervujte si svůj termín přímo u konkrétního poskytovatele.</p>
         <p class="tags">Masáže | práce s tělem | vědomý dotek | individuální péče | další služby</p>
         <p class="quote">Dopřejte si chvíli, která bude jen vaše.</p>
-        <a class="btn" href="#contact">Prohlédnout služby</a>
+        <a class="btn" href="#booking" data-open-booking>Rezervovat péči</a>
       </div>
       <div class="room-gallery" aria-label="Další fotografie Centra Přítomnost">
         <img src="assets/attic-corner.jpeg" alt="Klidný kout v podkroví" loading="lazy">
@@ -168,18 +244,234 @@
       </div>
     </div>
   </section>
+
+  <div class="booking-modal" id="booking-modal" aria-hidden="true">
+    <div class="booking-dialog" role="dialog" aria-modal="true" aria-labelledby="booking-title">
+      <button class="booking-close" type="button" aria-label="Zavřít" data-close-booking>×</button>
+      <div class="section-label">Centrum Přítomnost · Rezervace</div>
+      <h2 id="booking-title">Požádejte o rezervaci.</h2>
+      <p class="booking-intro">Vyberte typ rezervace, termín a vyplňte kontaktní údaje. Odesláním vznikne nezávazná žádost, nikoli potvrzená rezervace.</p>
+      <form id="booking-form" class="availability" method="post" target="booking-submit-frame" action="https://script.google.com/macros/s/AKfycbyZVA4GPX-M_QwLySfFNQZsODTu1YhL7TiPZ7kZYgtTIcmLY-DDzGAearX2CPT7SfMO/exec">
+        <input type="hidden" name="responseToken" id="response-token">
+        <input type="hidden" name="date" id="booking-date">
+        <input type="hidden" name="startTime" id="booking-start">
+        <input type="hidden" name="endDate" id="booking-end-date">
+        <input type="hidden" name="endTime" id="booking-end">
+        <input type="hidden" name="duration" id="booking-duration">
+        <div class="booking-fields">
+          <label for="booking-category">Typ rezervace</label>
+          <select id="booking-category" name="category" required>
+            <option value="Pronájem prostoru">Pronájem prostoru</option>
+            <option value="Událost / workshop">Událost / workshop</option>
+            <option value="Masáž / individuální péče">Masáž / individuální péče</option>
+          </select>
+          <label for="booking-service">Služba</label>
+          <select id="booking-service" name="service" required>
+            <option value="Pronájem prostoru">Pronájem prostoru</option>
+            <option value="Ubytování / přenocování">Ubytování / přenocování</option>
+          </select>
+          <div id="overnight-options" hidden>
+            <label for="booking-nights">Počet nocí</label>
+            <select id="booking-nights" name="nights">
+              <option value="1">1 noc</option><option value="2">2 noci</option><option value="3">3 noci</option><option value="4">4 noci</option><option value="5">5 nocí</option><option value="6">6 nocí</option><option value="7">7 nocí</option><option value="14">14 nocí</option><option value="30">30 nocí</option>
+            </select>
+            <p class="availability-note">Check-in: 15:00 · Check-out: 12:00. Vybraný den je den příjezdu.</p>
+          </div>
+          <div id="duration-options">
+            <label for="booking-hours">Délka rezervace</label>
+            <select id="booking-hours" name="hours">
+              <option value="1">1 hodina</option><option value="2">2 hodiny</option><option value="3">3 hodiny</option><option value="4">4 hodiny</option><option value="5">5 hodin</option><option value="6">6 hodin</option><option value="8">8 hodin</option><option value="12">12 hodin</option>
+            </select>
+          </div>
+          <label>Vyberte datum</label>
+          <div class="month-head">
+            <button class="btn" id="previous-month" type="button" aria-label="Předchozí měsíc">‹</button>
+            <div class="month-title" id="calendar-month-title" aria-live="polite"></div>
+            <button class="btn" id="next-month" type="button" aria-label="Další měsíc">›</button>
+          </div>
+          <div class="calendar-grid" id="calendar-grid" aria-label="Měsíční kalendář"></div>
+          <div class="calendar-selected" id="calendar-selected-date">Vyberte den.</div>
+          <div id="professional-picker" hidden>
+            <label for="booking-professional">Vyberte si odbornici</label>
+            <div class="professional-choice">
+              <select id="booking-professional" name="professional" required>
+                <option value="Zuzana Pithardová, DiS.">Zuzana Pithardová, DiS.</option>
+              </select>
+              <button class="btn professional-bio-trigger" type="button" id="open-zuzka-bio">Profil odbornice</button>
+            </div>
+          </div>
+          <div id="availability-result" class="availability-status" role="status" aria-live="polite">Nejprve vyberte datum.</div>
+          <div id="customer-fields" hidden>
+            <div class="booking-selection" id="booking-selection"></div>
+            <label for="booking-name">Jméno a příjmení</label>
+            <input id="booking-name" name="name" autocomplete="name" required>
+            <label for="booking-email">E-mail</label>
+            <input id="booking-email" name="email" type="email" autocomplete="email" required>
+            <label for="booking-phone">Telefon</label>
+            <input id="booking-phone" name="phone" type="tel" autocomplete="tel" required>
+            <label for="booking-message">Zpráva (nepovinné)</label>
+            <textarea id="booking-message" name="message" rows="3"></textarea>
+            <label class="booking-consent"><input type="checkbox" id="booking-consent" required> Beru na vědomí, že jde o nezávaznou žádost a termín bude potvrzen až po schválení Centrem Přítomnost.</label>
+            <button class="btn" id="booking-submit" type="submit">Odeslat žádost o rezervaci</button>
+          </div>
+          <div id="booking-feedback" class="availability-status" role="status" aria-live="polite" hidden></div>
+        </div>
+      </form>
+      <iframe name="booking-submit-frame" id="booking-submit-frame" title="Odeslání rezervace" hidden></iframe>
+      <p class="availability-note">Volné časy se ověřují v Google kalendáři. Žádost není potvrzením rezervace ani platbou.</p>
+    </div>
+  </div>
+
+  <div class="booking-modal" id="zuzka-bio-modal" aria-hidden="true">
+    <div class="booking-dialog bio-dialog" role="dialog" aria-modal="true" aria-labelledby="zuzka-bio-title">
+      <button class="booking-close" type="button" aria-label="Zavřít" data-close-bio>×</button>
+      <div class="bio-header">
+        <img src="assets/zuzana-pithardova.jpg" alt="Zuzana Pithardová, DiS." loading="lazy">
+        <div><div class="section-label">Individuální péče · Centrum Přítomnost</div><h2 id="zuzka-bio-title">Zuzana Pithardová, DiS.</h2><p><a href="tel:+420775904465">775 904 465</a><br><a href="https://zuzkapithardova.cz/" target="_blank" rel="noopener">zuzkapithardova.cz</a></p></div>
+      </div>
+      <div class="bio-copy">
+        <p>Zuzka pracuje s tělem žen, které jsou dlouhodobě přetížené a potřebují zpomalit, zklidnit se a znovu se opřít o sebe. Nejde o klasickou masáž, kde se „něco opravuje“. Vytváří prostor, kde tělo může povolit a vrátit se do rovnováhy.</p>
+        <p>Propojuje vědomý dotek, dech a vnímání těla. Na masáži v těle něco nastartuje a ono pak pracuje samo, klidně ještě několik dní po setkání. Základem je pro ni bezpečí, respekt a důvěra. Průběžně se vzdělává v práci s tělem, nervovým systémem a psychosomatikou.</p>
+        <p>Přicházejí k ní hlavně ženy. Muže přijímá, když vědí, proč jdou, a chtějí s tělem opravdu pracovat.</p>
+        <h3>Ceník</h3>
+        <ul>
+          <li><strong>Energetická / tantra masáž, vědomý dotek</strong><br>90 min — 2 300 Kč · 120 min — 2 900 Kč (+ 30 min konzultace)</li>
+          <li><strong>Rychlodobíjecí masáž</strong><br>60 min — 1 600 Kč (+ 20 min konzultace)</li>
+          <li><strong>Mapování těla &amp; bodywork</strong><br>120 min — 2 500 Kč (+ 20 min konzultace)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
   <section class="contact" id="contact">
     <div class="wrap">
       <div class="section-label" style="color:#d6c79c">Centrum Přítomnost</div>
       <h2>Vytvořte si svůj vlastní den v Přítomnosti.</h2>
       <p>Máte zájem o pronájem prostoru, chystanou událost nebo individuální péči? Ozvěte se nám a domluvte si podrobnosti.</p>
-      <!-- TODO: Replace this contact button with Daniela's confirmed email, phone, booking form, or booking URL. -->
-      <a class="btn light" href="mailto:">Napište nám</a>
+      <a class="btn light" href="#booking" data-open-booking>Požádat o rezervaci</a>
     </div>
   </section>
 </main>
 <footer>
   <div class="wrap footer-inner"><span>© 2026 Centrum Přítomnost</span><span>Designed by Alansm Solutions</span></div>
 </footer>
+
+<script>
+(() => {
+  const endpoint='https://script.google.com/macros/s/AKfycbyZVA4GPX-M_QwLySfFNQZsODTu1YhL7TiPZ7kZYgtTIcmLY-DDzGAearX2CPT7SfMO/exec';
+  const $=id=>document.getElementById(id);
+  const modal=$('booking-modal'),grid=$('calendar-grid'),title=$('calendar-month-title'),selectedLabel=$('calendar-selected-date'),result=$('availability-result');
+  const form=$('booking-form'),feedback=$('booking-feedback'),customerFields=$('customer-fields');
+  const professionalPicker=$('professional-picker'),professionalSelect=$('booking-professional');
+  const bioModal=$('zuzka-bio-modal');
+  function openBio(){bioModal.classList.add('is-open');bioModal.setAttribute('aria-hidden','false');}
+  function closeBio(){bioModal.classList.remove('is-open');bioModal.setAttribute('aria-hidden','true');}
+  $('open-zuzka-bio').addEventListener('click',openBio);
+  $('open-zuzka-bio').hidden=professionalSelect.value!=='Zuzana Pithardová, DiS.';
+  function loadProfessionals(){const cb='__centrumProfessionals_'+Date.now(),sc=document.createElement('script');window[cb]=data=>{try{if(data&&data.ok&&Array.isArray(data.professionals)){const current=professionalSelect.value;professionalSelect.replaceChildren();data.professionals.forEach(p=>{const o=document.createElement('option');o.value=p.name;o.textContent=p.name;professionalSelect.appendChild(o);});if([...professionalSelect.options].some(o=>o.value===current))professionalSelect.value=current;$('open-zuzka-bio').hidden=professionalSelect.value!=='Zuzana Pithardová, DiS.';}}finally{sc.remove();delete window[cb];}};sc.onerror=()=>{sc.remove();delete window[cb];};const u=new URL(endpoint);u.searchParams.set('action','professionals');u.searchParams.set('callback',cb);sc.src=u.toString();document.head.appendChild(sc);}
+  bioModal.querySelectorAll('[data-close-bio]').forEach(el=>el.addEventListener('click',closeBio));
+  bioModal.addEventListener('click',e=>{if(e.target===bioModal)closeBio();});
+  if(!modal||!grid||!form)return;
+  const today=new Date();today.setHours(0,0,0,0);
+  let shownMonth=new Date(today.getFullYear(),today.getMonth(),1),selectedDate='',selectedStart='',busyIntervals=[],requestToken=0,submitToken='';
+  const weekdays=['Po','Út','St','Čt','Pá','So','Ne'];
+  const dateKey=d=>[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
+  const parseLocal=(date,time)=>new Date(date+'T'+time+':00');
+  const category=$('booking-category'),service=$('booking-service'),nights=$('booking-nights'),hours=$('booking-hours');
+  function openBooking(e){if(e)e.preventDefault();loadProfessionals();modal.classList.add('is-open');modal.setAttribute('aria-hidden','false');document.body.classList.add('booking-modal-open');if(!selectedDate)selectDate(today);else checkAvailability(selectedDate);}
+  function closeBooking(){modal.classList.remove('is-open');modal.setAttribute('aria-hidden','true');document.body.classList.remove('booking-modal-open');}
+  document.querySelectorAll('[data-open-booking]').forEach(el=>el.addEventListener('click',openBooking));
+  modal.querySelectorAll('[data-close-booking]').forEach(el=>el.addEventListener('click',closeBooking));
+  modal.addEventListener('click',e=>{if(e.target===modal)closeBooking();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('is-open'))closeBooking();});
+  function syncServiceOptions(){
+    const isRental=category.value==='Pronájem prostoru';
+    const isMassage=category.value==='Masáž / individuální péče';
+    $('overnight-options').hidden=!(isRental&&service.value==='Ubytování / přenocování');
+    $('duration-options').hidden=!isRental||$('overnight-options').hidden===false;
+    if(isMassage){
+      service.innerHTML='';
+      [['Energetická / tantra masáž — 90 min + 30 min konzultace · 2 300 Kč','120'],['Energetická / tantra masáž — 120 min + 30 min konzultace · 2 900 Kč','150'],['Rychlodobíjecí masáž — 60 min + 20 min konzultace · 1 600 Kč','80'],['Mapování těla & bodywork — 120 min + 20 min konzultace · 2 500 Kč','140']].forEach((item,i)=>{const opt=document.createElement('option');opt.value=['Energetická / tantra masáž (90 min + 30 min konzultace)','Energetická / tantra masáž (120 min + 30 min konzultace)','Rychlodobíjecí masáž (60 min + 20 min konzultace)','Mapování těla & bodywork (120 min + 20 min konzultace)'][i];opt.textContent=item[0];opt.dataset.duration=item[1];service.appendChild(opt);});
+    }else if(!isRental){
+      service.innerHTML='';const opt=document.createElement('option');opt.value='Workshop / událost';opt.textContent=opt.value;service.appendChild(opt);
+    }else if(![...service.options].some(o=>o.value==='Ubytování / přenocování'))service.innerHTML='<option value="Pronájem prostoru">Pronájem prostoru</option><option value="Ubytování / přenocování">Ubytování / přenocování</option>';
+    resetSelection();
+  }
+  function resetSelection(){selectedStart='';customerFields.hidden=true;feedback.hidden=true;if(professionalPicker)professionalPicker.hidden=category.value!=='Masáž / individuální péče'||!selectedDate;renderSlots();}
+  category.addEventListener('change',()=>{syncServiceOptions();professionalPicker.hidden=category.value!=='Masáž / individuální péče'||!selectedDate;if(selectedDate)checkAvailability(selectedDate);});
+  professionalSelect.addEventListener('change',()=>{$('open-zuzka-bio').hidden=professionalSelect.value!=='Zuzana Pithardová, DiS.';selectedStart='';customerFields.hidden=true;if(selectedDate)checkAvailability(selectedDate);});
+  service.addEventListener('change',()=>{syncServiceOptions();});
+  hours.addEventListener('change',()=>{resetSelection();});
+  nights.addEventListener('change',()=>{resetSelection();});
+  function renderCalendar(){
+    title.textContent=new Intl.DateTimeFormat('cs-CZ',{month:'long',year:'numeric'}).format(shownMonth);grid.replaceChildren();
+    weekdays.forEach(day=>{const d=document.createElement('div');d.className='calendar-weekday';d.textContent=day;grid.appendChild(d);});
+    const offset=(new Date(shownMonth.getFullYear(),shownMonth.getMonth(),1).getDay()+6)%7,days=new Date(shownMonth.getFullYear(),shownMonth.getMonth()+1,0).getDate();
+    for(let i=0;i<offset;i++)grid.appendChild(document.createElement('div'));
+    for(let n=1;n<=days;n++){const date=new Date(shownMonth.getFullYear(),shownMonth.getMonth(),n),key=dateKey(date),b=document.createElement('button');b.type='button';b.className='calendar-day';b.textContent=String(n);b.disabled=date<today;b.setAttribute('aria-label',new Intl.DateTimeFormat('cs-CZ',{dateStyle:'full'}).format(date));if(key===dateKey(today))b.classList.add('today');if(key===selectedDate)b.classList.add('selected');b.setAttribute('aria-pressed',String(key===selectedDate));b.addEventListener('click',()=>selectDate(date));grid.appendChild(b);}
+    $('previous-month').disabled=shownMonth.getFullYear()===today.getFullYear()&&shownMonth.getMonth()===today.getMonth();
+  }
+  function selectDate(date){selectedDate=dateKey(date);$('booking-date').value=selectedDate;selectedLabel.textContent='Vybraný den: '+new Intl.DateTimeFormat('cs-CZ',{dateStyle:'full'}).format(date);selectedStart='';customerFields.hidden=true;professionalPicker.hidden=category.value!=='Masáž / individuální péče';renderCalendar();checkAvailability(selectedDate);}
+  function checkAvailability(date){
+    const token=++requestToken;result.textContent='Načítáme události z kalendáře…';result.classList.add('availability-loading');
+    const cb='__centrumAvailability_'+Date.now()+'_'+Math.floor(Math.random()*100000),s=document.createElement('script');let done=false;
+    const timeout=setTimeout(()=>finish('Kalendář neodpověděl. Zkuste to prosím znovu.'),18000);
+    function cleanup(){if(done)return;done=true;clearTimeout(timeout);s.remove();try{delete window[cb];}catch(_){window[cb]=undefined;}}
+    function finish(message){cleanup();if(token!==requestToken)return;result.classList.remove('availability-loading');result.textContent=message;const b=document.createElement('button');b.type='button';b.className='btn';b.textContent='Zkusit znovu';b.onclick=()=>checkAvailability(date);result.appendChild(b);}
+    window[cb]=data=>{cleanup();if(token!==requestToken)return;result.classList.remove('availability-loading');if(!data||data.ok!==true||!Array.isArray(data.busy)){finish(data&&data.error?data.error:'Nepodařilo se načíst dostupnost.');return;}busyIntervals=data.busy;renderSlots();};
+    s.onerror=()=>finish('Nepodařilo se spojit s rezervačním kalendářem.');const u=new URL(endpoint);u.searchParams.set('action','availability');u.searchParams.set('date',date);if(category.value==='Masáž / individuální péče'&&professionalSelect.value)u.searchParams.set('professional',professionalSelect.value);u.searchParams.set('callback',cb);u.searchParams.set('_',Date.now());s.src=u.toString();s.async=true;document.head.appendChild(s);
+  }
+  function selectedRange(startTime){
+    const overnight=category.value==='Pronájem prostoru'&&service.value==='Ubytování / přenocování';
+    const start=overnight?parseLocal(selectedDate,'15:00'):parseLocal(selectedDate,startTime);
+    const durationMinutes=category.value==='Masáž / individuální péče'?Number(service.selectedOptions[0]?.dataset.duration||120):Number(hours.value)*60;
+    const end=overnight?new Date(start.getTime()+Number(nights.value)*86400000-3*3600000):new Date(start.getTime()+durationMinutes*60000);
+    return {start,end,duration:Math.round((end-start)/60000),startTime:overnight?'15:00':startTime,endDate:dateKey(end),endTime:overnight?'12:00':String(end.getHours()).padStart(2,'0')+':'+String(end.getMinutes()).padStart(2,'0'),overnight};
+  }
+  function renderSlots(){
+    if(!selectedDate)return;
+    result.replaceChildren();const heading=document.createElement('div');heading.textContent='Vyberte volný '+(category.value==='Pronájem prostoru'&&service.value==='Ubytování / přenocování'?'termín příjezdu':'začátek');result.appendChild(heading);
+    const slots=document.createElement('div');slots.className='slot-grid';const overnight=category.value==='Pronájem prostoru'&&service.value==='Ubytování / přenocování';
+    for(let h=0;h<24;h++){if(overnight&&h!==15)continue;const time=String(h).padStart(2,'0')+':00',range=selectedRange(time),overlap=busyIntervals.some(ev=>{const a=parseLocal(ev.start.slice(0,10),ev.start.slice(11,16)),b=parseLocal(ev.end.slice(0,10),ev.end.slice(11,16));return range.start<b&&range.end>a;});
+      const btn=document.createElement('button');btn.type='button';btn.className='slot-button';btn.textContent=overnight?'Příjezd 15:00':time;btn.disabled=overlap||range.end<=new Date();btn.addEventListener('click',()=>chooseSlot(time));slots.appendChild(btn);}
+    result.appendChild(slots);
+    const note=document.createElement('p');note.className='availability-note';note.textContent=overnight?'Ubytování: příjezd v 15:00, odjezd v 12:00. Dostupnost se kontroluje po celou dobu pobytu.':'Volné začátky jsou v hodinových krocích. Délku zvolte výše.';result.appendChild(note);
+  }
+  function chooseSlot(time){
+    selectedStart=time;const r=selectedRange(time);if(busyIntervals.some(ev=>{const a=parseLocal(ev.start.slice(0,10),ev.start.slice(11,16)),b=parseLocal(ev.end.slice(0,10),ev.end.slice(11,16));return r.start<b&&r.end>a;})){result.textContent='Tento termín již není dostupný. Vyberte prosím jiný.';customerFields.hidden=true;return;}
+    $('booking-date').value=selectedDate;$('booking-start').value=r.startTime;$('booking-end-date').value=r.endDate;$('booking-end').value=r.endTime;$('booking-duration').value=String(r.duration);
+    const professional=category.value==='Masáž / individuální péče'?professionalSelect.value:'';
+    const desc=r.overnight?selectedDate+' 15:00 – '+r.endDate+' 12:00 ('+nights.value+' nocí)':selectedDate+' '+r.startTime+' – '+r.endTime;
+    $('booking-selection').textContent='Vybraný termín: '+desc+(professional?' · Odbornice: '+professional:'');customerFields.hidden=false;feedback.hidden=true;
+    result.querySelectorAll('.slot-button').forEach(b=>b.classList.toggle('selected',b.textContent===(r.overnight?'Příjezd 15:00':time)));
+  }
+  $('previous-month').addEventListener('click',()=>{shownMonth=new Date(shownMonth.getFullYear(),shownMonth.getMonth()-1,1);renderCalendar();});
+  $('next-month').addEventListener('click',()=>{shownMonth=new Date(shownMonth.getFullYear(),shownMonth.getMonth()+1,1);renderCalendar();});
+  let awaitingResponse=false;
+  const submitFrame=$('booking-submit-frame');
+  window.addEventListener('message',event=>{
+    // Apps Script may deliver the iframe response from different Google-controlled
+    // hosts depending on redirects and the signed-in browser session. Trust only
+    // messages from our dedicated submission iframe and require the one-time token.
+    if(!submitFrame||event.source!==submitFrame.contentWindow)return;
+    const d=event.data;
+    if(!d||d.type!=='centrum-booking-result'||!submitToken||d.token!==submitToken)return;
+    awaitingResponse=false;
+    $('booking-submit').disabled=false;
+    feedback.hidden=false;
+    feedback.textContent=d.ok?'Děkujeme! Vaše žádost byla odeslána. Termín je předběžně blokován a čeká na potvrzení Centrem Přítomnost.':'Žádost se nepodařilo odeslat: '+(d.error||'Neznámá chyba');
+    if(d.ok){form.reset();customerFields.hidden=true;selectedStart='';checkAvailability(selectedDate);}
+  });
+  form.addEventListener('submit',e=>{
+    if(!selectedDate||!selectedStart){e.preventDefault();feedback.hidden=false;feedback.textContent='Nejprve vyberte datum a čas.';return;}
+    if(category.value==='Masáž / individuální péče'&&!professionalSelect.value){e.preventDefault();feedback.hidden=false;feedback.textContent='Vyberte prosím odbornici.';return;}
+    if(awaitingResponse){e.preventDefault();return;}
+    submitToken=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():String(Date.now())+'-'+Math.random().toString(36).slice(2);
+    $('response-token').value=submitToken;awaitingResponse=true;$('booking-submit').disabled=true;feedback.hidden=false;feedback.textContent='Odesíláme žádost…';
+    setTimeout(()=>{if(awaitingResponse){awaitingResponse=false;$('booking-submit').disabled=false;feedback.textContent='Nepodařilo se ověřit odpověď serveru. Před opakováním zkontrolujte, zda žádost nepřišla do e-mailu nebo tabulky.';}},25000);
+  });
+  syncServiceOptions();renderCalendar();
+})();
+</script>
+
 </body>
 </html>
