@@ -98,6 +98,9 @@ function ensureProfessionalsSheet_(ss){
     const current=sheet.getRange(1,1,1,Math.max(sheet.getLastColumn(),headers.length)).getValues()[0];
     headers.forEach((h,i)=>{if(current[i]!==h)sheet.getRange(1,i+1).setValue(h);});
   }
+  if(sheet.getLastRow()<2){
+    sheet.getRange(2,1,1,4).setValues([['Zuzana Pithardová, DiS.','zuzanapithardova@gmail.com',true,'Zuzana']]);
+  }
   return sheet;
 }
 function getProfessionals_(ss){
@@ -243,13 +246,19 @@ function createRequest_(data){
       'End: '+Utilities.formatDate(end,CONFIG.TIME_ZONE,'dd.MM.yyyy HH:mm')
     ].join('\n');
     const event=calendar.createEvent(title,start,end,{description:description});
+    let requestRow=0;
     try{
       sheet.appendRow([id,new Date(),'PENDING',data.category,data.service,data.date,data.startTime,duration,name,email,phone,message,event.getId(),data.endDate||Utilities.formatDate(end,CONFIG.TIME_ZONE,'yyyy-MM-dd'),data.endTime||Utilities.formatDate(end,CONFIG.TIME_ZONE,'HH:mm'),nights,professional]);
+      requestRow=sheet.getLastRow();
       if(professionalRecord){
         const pSheet=ensureProfessionalSheet_(ss,professionalRecord);
         pSheet.appendRow([id,'PENDING',data.date,data.startTime,data.endDate||Utilities.formatDate(end,CONFIG.TIME_ZONE,'yyyy-MM-dd'),data.endTime||Utilities.formatDate(end,CONFIG.TIME_ZONE,'HH:mm'),duration,data.service,name,email,phone,message]);
       }
-    }catch(sheetError){calendar.deleteEvent(event.getId());throw new Error('Could not save the request in the spreadsheet. '+sheetError.message);}
+    }catch(sheetError){
+      if(requestRow>0)sheet.deleteRow(requestRow);
+      calendar.deleteEvent(event.getId());
+      throw new Error('Could not save the request in the spreadsheet. '+sheetError.message);
+    }
     const formatted=Utilities.formatDate(start,CONFIG.TIME_ZONE,'dd.MM.yyyy HH:mm')+' – '+Utilities.formatDate(end,CONFIG.TIME_ZONE,'dd.MM.yyyy HH:mm');
     try{
       MailApp.sendEmail({to:CONFIG.ADMIN_EMAIL,subject:'New booking request — Centrum Přítomnost',body:'A new booking request is waiting for manual approval.\n\nCategory: '+data.category+'\nService: '+data.service+'\nProfessional: '+professional+'\nDate and time: '+formatted+'\nDuration: '+duration+' minutes\nCustomer: '+name+'\nEmail: '+email+'\nPhone: '+phone+'\nMessage: '+message+'\n\nThe calendar slot is temporarily blocked as PENDING.'});
