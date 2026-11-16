@@ -161,8 +161,9 @@ function getProfessionalBusy_(ss,dateString,professional){
   const requests=ss.getSheetByName(CONFIG.REQUEST_SHEET);
   if(!requests||requests.getLastRow()<2)return [];
   syncProfessionalStatuses_(ss,professional);
-  const rows=requests.getRange(2,1,requests.getLastRow()-1,REQUEST_HEADERS.length).getValues(),busy=[];
+  const rows=requests.getRange(2,1,requests.getLastRow()-1,REQUEST_HEADERS.length).getValues(),busy=[],knownIds={};
   rows.forEach(r=>{
+    if(r[0])knownIds[String(r[0])]=true;
     if(String(r[16]||'').trim()!==professional.name)return;
     const status=String(r[2]||'PENDING').toUpperCase();
     if(status==='REJECTED'||status==='CANCELLED')return;
@@ -172,6 +173,18 @@ function getProfessionalBusy_(ss,dateString,professional){
     const end=localDateTime_(endDate,timeCellString_(r[14],'23:59'));
     busy.push({start:Utilities.formatDate(start,CONFIG.TIME_ZONE,"yyyy-MM-dd'T'HH:mm:ss"),end:Utilities.formatDate(end,CONFIG.TIME_ZONE,"yyyy-MM-dd'T'HH:mm:ss")});
   });
+  const mirror=ensureProfessionalSheet_(ss,professional);
+  if(mirror.getLastRow()>1){
+    mirror.getRange(2,1,mirror.getLastRow()-1,12).getValues().forEach(r=>{
+      if(!r[0]||knownIds[String(r[0])])return;
+      const status=String(r[1]||'BUSY').toUpperCase();
+      if(status==='REJECTED'||status==='CANCELLED')return;
+      const sd=dateCellString_(r[2]),ed=dateCellString_(r[4]||r[2]);
+      if(sd!==dateString&&ed!==dateString)return;
+      const a=localDateTime_(sd,timeCellString_(r[3],'00:00')),b=localDateTime_(ed,timeCellString_(r[5],'23:59'));
+      busy.push({start:Utilities.formatDate(a,CONFIG.TIME_ZONE,"yyyy-MM-dd'T'HH:mm:ss"),end:Utilities.formatDate(b,CONFIG.TIME_ZONE,"yyyy-MM-dd'T'HH:mm:ss")});
+    });
+  }
   return busy;
 }
 function getAvailability_(dateString,professionalName){
@@ -179,12 +192,19 @@ function getAvailability_(dateString,professionalName){
   const start=localDateTime_(dateString,'00:00'),end=localDateTime_(dateString,'23:59');
   const calendar=CalendarApp.getCalendarById(CONFIG.CALENDAR_ID);
   if(!calendar)throw new Error('Calendar is not accessible.');
-  let busy=calendar.getEvents(start,new Date(end.getTime()+60000)).map(ev=>({
+  const ss=SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID);
+  const requests=ss.getSheetByName(CONFIG.REQUEST_SHEET),requestStatus={};
+  if(requests&&requests.getLastRow()>1)requests.getRange(2,1,requests.getLastRow()-1,REQUEST_HEADERS.length).getValues().forEach(r=>{if(r[0])requestStatus[String(r[0])]=String(r[2]||'PENDING').toUpperCase();});
+  let busy=calendar.getEvents(start,new Date(end.getTime()+60000)).filter(ev=>{
+    const match=String(ev.getDescription()||'').match(/Request ID:\\s*([0-9a-f-]+)/i);
+    if(!match)return true;
+    const status=requestStatus[match[1]];
+    return status!=='REJECTED'&&status!=='CANCELLED';
+  }).map(ev=>({
     start:Utilities.formatDate(ev.getStartTime(),CONFIG.TIME_ZONE,"yyyy-MM-dd'T'HH:mm:ss"),
     end:Utilities.formatDate(ev.getEndTime(),CONFIG.TIME_ZONE,"yyyy-MM-dd'T'HH:mm:ss")
   }));
   if(professionalName){
-    const ss=SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID);
     const professional=getProfessional_(ss,professionalName);
     if(!professional)throw new Error('Selected professional is not available.');
     busy=busy.concat(getProfessionalBusy_(ss,dateString,professional));
