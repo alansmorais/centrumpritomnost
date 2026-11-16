@@ -9,6 +9,8 @@ const CONFIG = {
   TIME_ZONE: 'Europe/Prague',
   REQUEST_SHEET: 'Requests',
   SETTINGS_SHEET: 'Settings',
+  ZUZANA_SHEET: 'Zuzana',
+  ZUZANA_EMAIL: 'zuzanapithardova@gmail.com',
   HOLD_PREFIX: '[PENDING] '
 };
 const REQUEST_HEADERS = [
@@ -33,9 +35,12 @@ function setupCentrum() {
     ]);
     settings.setFrozenRows(1);settings.getRange(1,1,1,2).setFontWeight('bold');
   }
+  let zuz=ss.getSheetByName(CONFIG.ZUZANA_SHEET);
+  if(!zuz)zuz=ss.insertSheet(CONFIG.ZUZANA_SHEET);
+  ensureZuzanaHeaders_(zuz);
   const calendar=CalendarApp.getCalendarById(CONFIG.CALENDAR_ID);
   if(!calendar)throw new Error('Primary Google Calendar is not accessible.');
-  return 'Setup completed. Spreadsheet and primary calendar are accessible.';
+  return 'Setup completed. Requests, Zuzana sheet and primary calendar are accessible.';
 }
 function ensureRequestHeaders_(sheet){
   const current=sheet.getLastColumn()?sheet.getRange(1,1,1,sheet.getLastColumn()).getValues()[0]:[];
@@ -50,7 +55,7 @@ function ensureRequestHeaders_(sheet){
 }
 function doGet(e){
   try{
-    if(getParam_(e,'action')==='availability')return availabilityOutput_(e,getAvailability_(getParam_(e,'date')));
+    if(getParam_(e,'action')==='availability')return availabilityOutput_(e,getAvailability_(getParam_(e,'date'),getParam_(e,'professional')));
     return jsonOutput_({ok:true,service:'Centrum Přítomnost booking backend',status:'ready'});
   }catch(err){
     const value={ok:false,error:err.message||'Unable to process request.'};
@@ -82,7 +87,27 @@ function postMessageOutput_(token,result){
   const page='<!doctype html><html><head><meta charset="utf-8"></head><body><script>window.parent.postMessage('+safe+', "*");</script><p>Request processed.</p></body></html>';
   return HtmlService.createHtmlOutput(page).setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
-function getAvailability_(dateString){
+function ensureZuzanaHeaders_(sheet){
+  const headers=['Request ID','Status','Date','Start Time','End Date','End Time','Duration (minutes)','Service','Customer Name','Customer Email','Customer Phone','Message'];
+  if(sheet.getLastRow()===0){sheet.getRange(1,1,1,headers.length).setValues([headers]);sheet.setFrozenRows(1);sheet.getRange(1,1,1,headers.length).setFontWeight('bold');}
+  else{const current=sheet.getRange(1,1,1,Math.max(sheet.getLastColumn(),headers.length)).getValues()[0];headers.forEach((h,i)=>{if(current[i]!==h)sheet.getRange(1,i+1).setValue(h);});}
+}
+function getZuzanaBusy_(dateString){
+  const ss=SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID),sheet=ss.getSheetByName(CONFIG.ZUZANA_SHEET);
+  if(!sheet||sheet.getLastRow()<2)return [];
+  const rows=sheet.getRange(2,1,sheet.getLastRow()-1,12).getValues(),busy=[];
+  rows.forEach(r=>{
+    const status=String(r[1]||'').toUpperCase();
+    if(status==='REJECTED'||status==='CANCELLED')return;
+    const startDate=String(r[2]||'').slice(0,10),endDate=String(r[4]||r[2]||'').slice(0,10);
+    if(startDate!==dateString&&endDate!==dateString)return;
+    const start=localDateTime_(startDate,String(r[3]||'00:00').slice(0,5));
+    const end=localDateTime_(endDate,String(r[5]||'23:59').slice(0,5));
+    busy.push({start:Utilities.formatDate(start,CONFIG.TIME_ZONE,\"yyyy-MM-dd'T'HH:mm:ss\"),end:Utilities.formatDate(end,CONFIG.TIME_ZONE,\"yyyy-MM-dd'T'HH:mm:ss\")});
+  });
+  return busy;
+}
+function getAvailability_(dateString,professional){
   if(!/^\d{4}-\d{2}-\d{2}$/.test(dateString||''))return {ok:false,error:'Invalid date. Use YYYY-MM-DD.'};
   const start=localDateTime_(dateString,'00:00'),end=localDateTime_(dateString,'23:59');
   const calendar=CalendarApp.getCalendarById(CONFIG.CALENDAR_ID);
@@ -91,6 +116,7 @@ function getAvailability_(dateString){
     start:Utilities.formatDate(ev.getStartTime(),CONFIG.TIME_ZONE,"yyyy-MM-dd'T'HH:mm:ss"),
     end:Utilities.formatDate(ev.getEndTime(),CONFIG.TIME_ZONE,"yyyy-MM-dd'T'HH:mm:ss")
   }));
+  if(professional==='Zuzana Pithardová, DiS.')busy=busy.concat(getZuzanaBusy_(dateString));
   return {ok:true,date:dateString,busy:busy,timeZone:CONFIG.TIME_ZONE};
 }
 function localDateTime_(dateString,timeString){
@@ -128,6 +154,13 @@ function createRequest_(data){
     if(!calendar)throw new Error('Calendar is not accessible.');
     if(calendar.getEvents(start,end).length)throw new Error('This time is no longer available. Please choose another time.');
     const ss=SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID);
+    if(professional==='Zuzana Pithardová, DiS.'){
+      const zsheet=ss.getSheetByName(CONFIG.ZUZANA_SHEET);
+      if(!zsheet)throw new Error('Zuzana booking sheet is not configured.');
+      const rows=zsheet.getLastRow()>1?zsheet.getRange(2,1,zsheet.getLastRow()-1,12).getValues():[];
+      const conflict=rows.some(r=>{const st=String(r[1]||'').toUpperCase();if(st==='REJECTED'||st==='CANCELLED')return false;const sd=String(r[2]||'').slice(0,10),ed=String(r[4]||r[2]||'').slice(0,10);if(!sd||!ed)return false;const a=localDateTime_(sd,String(r[3]||'00:00').slice(0,5)),b=localDateTime_(ed,String(r[5]||'23:59').slice(0,5));return start<b&&end>a;});
+      if(conflict)throw new Error('Zuzana is already booked at this time. Please choose another time.');
+    }
     const sheet=ss.getSheetByName(CONFIG.REQUEST_SHEET);
     if(!sheet)throw new Error('Requests sheet is missing. Contact the administrator.');
     ensureRequestHeaders_(sheet);
@@ -142,10 +175,15 @@ function createRequest_(data){
     const event=calendar.createEvent(title,start,end,{description:description});
     try{
       sheet.appendRow([id,new Date(),'PENDING',data.category,data.service,data.date,data.startTime,duration,name,email,phone,message,event.getId(),data.endDate||Utilities.formatDate(end,CONFIG.TIME_ZONE,'yyyy-MM-dd'),data.endTime||Utilities.formatDate(end,CONFIG.TIME_ZONE,'HH:mm'),nights,professional]);
+      if(professional==='Zuzana Pithardová, DiS.'){
+        const zsheet=ss.getSheetByName(CONFIG.ZUZANA_SHEET);ensureZuzanaHeaders_(zsheet);
+        zsheet.appendRow([id,'PENDING',data.date,data.startTime,data.endDate||Utilities.formatDate(end,CONFIG.TIME_ZONE,'yyyy-MM-dd'),data.endTime||Utilities.formatDate(end,CONFIG.TIME_ZONE,'HH:mm'),duration,data.service,name,email,phone,message]);
+      }
     }catch(sheetError){calendar.deleteEvent(event.getId());throw new Error('Could not save the request in the spreadsheet. '+sheetError.message);}
     const formatted=Utilities.formatDate(start,CONFIG.TIME_ZONE,'dd.MM.yyyy HH:mm')+' – '+Utilities.formatDate(end,CONFIG.TIME_ZONE,'dd.MM.yyyy HH:mm');
     try{
       MailApp.sendEmail({to:CONFIG.ADMIN_EMAIL,subject:'New booking request — Centrum Přítomnost',body:'A new booking request is waiting for manual approval.\n\nCategory: '+data.category+'\nService: '+data.service+'\nProfessional: '+professional+'\nDate and time: '+formatted+'\nDuration: '+duration+' minutes\nCustomer: '+name+'\nEmail: '+email+'\nPhone: '+phone+'\nMessage: '+message+'\n\nThe calendar slot is temporarily blocked as PENDING.'});
+      if(professional==='Zuzana Pithardová, DiS.')MailApp.sendEmail({to:CONFIG.ZUZANA_EMAIL,subject:'New massage booking request — Centrum Přítomnost',body:'A new request for you is waiting for review.\\n\\nService: '+data.service+'\\nDate and time: '+formatted+'\\nCustomer: '+name+'\\nEmail: '+email+'\\nPhone: '+phone+'\\nMessage: '+message+'\\n\\nStatus: PENDING — not yet confirmed.'});
       MailApp.sendEmail({to:email,subject:'We received your request — Centrum Přítomnost',body:'Hello '+name+',\n\nWe received your request for '+data.service+(professional?' with '+professional:'')+' ('+formatted+'). This is not a confirmed reservation. We will contact you after reviewing it.\n\nCentrum Přítomnost'});
     }catch(mailError){console.error('Request saved, but notification email failed: '+mailError.message);}
     return {ok:true,requestId:id,status:'PENDING'};
